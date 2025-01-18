@@ -1,6 +1,6 @@
 import './index.css';
 //import HandleBarcodeScanner from './HandleBarcodeScanner';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { createBrowserRouter, RouterProvider, Routes, Route, BrowserRouter } from 'react-router-dom';
 import OrderHistory from './pages/OrderHistory';
 import Contact from './pages/Contact';
@@ -28,6 +28,11 @@ const router = createBrowserRouter([
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(()=>{
+    const isAdmin = localStorage.getItem('isAdmin');
+    console.log('User Id is logged on Login:' ,isAdmin);
+    isAdmin && setIsLoggedIn(true);
+  },[]);
 
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);

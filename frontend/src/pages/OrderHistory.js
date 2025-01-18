@@ -5,11 +5,14 @@ import './OrderHistory.css';
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [userFilter, setUserFilter] = useState('');
     const userId = localStorage.getItem('userId');
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
     
-    console.log('localStorage isAdmin:', localStorage.getItem('isAdmin'));
-    console.log('isAdmin value:', isAdmin);
+    console.log('OrderHistory Debug:');
+    console.log('userId:', userId);
+    console.log('isAdmin raw value:', localStorage.getItem('isAdmin'));
+    console.log('isAdmin parsed value:', isAdmin);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -18,10 +21,14 @@ const OrderHistory = () => {
                 return;
             }
             try {
-                // Use different endpoint based on admin status
                 const endpoint = isAdmin ? '/orders/all' : `/orders/${userId}`;
-                const response = await axios.get(`http://localhost:5000${endpoint}`);
-                console.log('response:', response.data);//debug
+                const response = await axios.get(`http://localhost:5000${endpoint}`, {
+                    params: { 
+                        isAdmin: isAdmin,
+                        userFilter: userFilter
+                    }
+                });
+                console.log('response:', response.data);
                 setOrders(response.data);
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -31,7 +38,12 @@ const OrderHistory = () => {
         };
 
         fetchOrders();
-    }, [userId, isAdmin]);
+    }, [userId, isAdmin, userFilter]);
+
+    const filteredOrders = orders.filter(order => 
+        !userFilter || 
+        order.customer_name?.toLowerCase().includes(userFilter.toLowerCase())
+    );
 
     if (!userId) return <div>Please login to view order history</div>;
     if (loading) return <div>Loading...</div>;
@@ -39,11 +51,24 @@ const OrderHistory = () => {
     return (
         <div className="order-history">
             <h2>{isAdmin ? 'All Orders History' : 'Order History'}</h2>
+            
+            {isAdmin && (
+                <div className="filter-section">
+                    <input
+                        type="text"
+                        placeholder="Filter by customer name..."
+                        value={userFilter}
+                        onChange={(e) => setUserFilter(e.target.value)}
+                        className="filter-input"
+                    />
+                </div>
+            )}
+
             <div className="orders-container">
-                {orders.length === 0 ? (
+                {filteredOrders.length === 0 ? (
                     <div className="no-orders">No orders found</div>
                 ) : (
-                    orders.map((order) => (
+                    filteredOrders.map((order) => (
                         <div key={order.order_id} className="order-card">
                             <div className="order-header">
                                 <div className="order-info">
