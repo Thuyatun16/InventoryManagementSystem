@@ -12,11 +12,15 @@
   "description": "",
   "dependencies": {
     "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.6",
     "express": "^4.21.1",
     "express-async-handler": "^1.2.0",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.4",
+    "node-cron": "^3.0.3",
     "sequelize": "^6.37.5"
   },
   "devDependencies": {

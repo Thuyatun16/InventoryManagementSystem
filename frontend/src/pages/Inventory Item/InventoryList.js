@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import AddItemForm from './AddItemForm';
 import axios from 'axios';
+import loadingIcon from '../../Icon/loading.png';
+import saveIcon from '../../Icon/saveIcon.png';
 
 
 import './InventoryList.css';
 
 function InventoryList() {
   const [items, setItems] = useState([]);
+  const[loading,setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(null);
   const [formData, setFormData] = useState({ name: '', quantity: '', barcode: '', price: '', sellPrice: ''});
   const [error, setError] = useState('');
@@ -16,10 +19,12 @@ function InventoryList() {
     axios.get('http://localhost:5000/read')
       .then((response) => {
         setItems(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
         setError('Error fetching data: ' + error.message);
+        setLoading(false);
       });
   };
 
@@ -86,7 +91,7 @@ function InventoryList() {
       setError('');
     }
   };
-
+  if (loading) return <div className='loading-container'><div className='loading-spinner'><img src={loadingIcon} alt='loadingIcon'/></div></div>;
   return (
     <div className="inventory-list">
       <AddItemForm
@@ -165,15 +170,12 @@ function InventoryList() {
                   </div>
                 </div>
                 <div className="inventory-item-buttons">
-                  <button 
+                  <img src={saveIcon} alt="Save-Icon" 
                     onClick={() => handleSaveItem(item.id)} 
-                    className="inventory-item-button save"
+                    className='save-icon'
                     title="Save"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-                    </svg>
-                  </button>
+                  />
+                    
                 </div>
                 {error && <p className="error-message">{error}</p>}
               </div>
@@ -217,5 +219,3 @@ function InventoryList() {
 }
 
 export default InventoryList;
-
-

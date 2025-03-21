@@ -1,0 +1,327 @@
+.Supplier-management {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+} 
+@media screen and (max-width: 768px) {
+    .Supplier-management {
+        padding: 0;
+        align-items: center;
+        margin : 0;
+    }
+  
+}
+.Supplier-management h2 {
+    color: #2d3748;
+    margin-bottom: 2rem;
+}
+/* SupplierManagement.css (Modified Sections) */
+.registration-card {
+    background: rgb(255, 255, 255);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    transition: transform 0.2s;
+  }
+  
+  .registration-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .form-grid input {
+    padding: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s;
+  }
+  
+  .form-grid input:focus {
+    border-color: #4299e1;
+    outline: none;
+  }
+  
+  .form-actions {
+    grid-column: span 2;
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .primary-btn {
+    background: #4f46e5;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    /* flex: 1; */
+  }
+  
+  .primary-btn:hover {
+    background: #4338ca;
+  }
+  
+  .secondary-btn {
+    background: #e53e3e;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    flex: 1;
+  }
+  
+  .secondary-btn:hover {
+    background: #c53030;
+  }
+  
+  .suppliers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  .supplier-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .supplier-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .card-header h4 {
+    color: #2d3748;
+    margin: 0;
+  }
+  
+  .card-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .edit-btn, .delete-btn {
+    background: none;
+    border: none;
+    color: #4299e1;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  
+  .edit-btn:hover {
+    background: #bfdbfe;
+  }
+  
+  .delete-btn:hover {
+    background: #fecaca;
+  }
+  
+  .card-body p {
+    margin: 0.5rem 0;
+    color: #4a5568;
+  }
+  
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+.registration-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.registration-form h3 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+}
+
+.CM-form-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+}
+
+.CM-form-group input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.CM-form-group button {
+    padding: 0.75rem 1.5rem;
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.CM-form-group button:hover {
+    background-color: #3182ce;
+}
+
+.cancel-btn {
+    background-color: #e53e3e !important;
+}
+
+.cancel-btn:hover {
+    background-color: #c53030 !important;
+}
+
+.Suppliers-list {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.Suppliers-list h3 {
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+}
+
+.Suppliers-grid {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+}
+
+.Supplier-header, .Supplier-row {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: space-between; /* Space items evenly */
+    align-items: center; /* Center items vertically */
+    padding: 10px; /* Add some padding for spacing */
+    border-bottom: 1px solid #e5e7eb; /* Optional: Add a bottom border for separation */
+}
+
+.Supplier-header span, .Supplier-row span {
+    flex: 1; /* Allow each item to take equal space */
+    text-align: left; /* Align text to the left */
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .Supplier-header, .Supplier-row {
+        flex-direction: column; /* Stack items vertically on smaller screens */
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    .Supplier-header span, .Supplier-row span {
+        width: 100%; /* Make each item take full width */
+        margin-bottom: 5px; /* Add some space between items */
+    }
+
+    .Supplier-header span:last-child, .Supplier-row .Supplier-actions {
+        align-self: flex-end; /* Align actions to the end */
+    }
+}
+
+@media (max-width: 480px) {
+    .Supplier-header, .Supplier-row {
+        padding: 5px; /* Reduce padding on smaller screens */
+    }
+
+    .Supplier-header span, .Supplier-row span {
+        font-size: 14px; /* Adjust font size for smaller screens */
+    }
+}
+
+.Supplier-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn {
+    background-color: #48bb78;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #e53e3e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background-color: #38a169;
+}
+
+.delete-btn:hover {
+    background-color: #c53030;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .CM-form-group {
+        flex-direction: column;
+    }
+    
+    .Supplier-header,
+    .Supplier-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    .Supplier-actions {
+        justify-content: flex-start;
+        margin-top: 0.5rem;
+    }
+} 
+img {
+    width: 30px;
+    /* Set width */
+    height: 30px;
+    /* Set height */
+    object-fit: contain;
+    cursor : pointer;
+    /* Maintain aspect ratio */
+}
+img:hover {
+    transform: scale(1.2);
+     /* Scale image on hover */
+}

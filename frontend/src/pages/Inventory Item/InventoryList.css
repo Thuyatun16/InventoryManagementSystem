@@ -1,11 +1,11 @@
 .inventory-list {
     max-width: 1200px;
-    width: 90%;
-    margin: 2rem auto;
+    width: 100%;
+    margin: 1rem auto;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    padding: 1rem;
     overflow-x: auto;
 }
 
@@ -249,10 +249,10 @@ h1 {
     color: white;
 }
 
-.scan-barcode-button {
+/* .scan-barcode-button {
     background: linear-gradient(135deg, #059669, #10b981);
     color: white;
-}
+} */
 
 .action-button:hover {
     transform: translateY(-2px);
@@ -273,6 +273,10 @@ h1 {
 .scan-barcode-button::before {
     content: "⌗";
     font-size: 1.2rem;
+}
+.scan-barcode-button.scanning {
+    animation: pulse 1.5s infinite;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
 }
 
 /* Button loading state */
@@ -296,28 +300,34 @@ h1 {
     100% { transform: scale(1); }
 }
 
-.scan-barcode-button.scanning {
-    animation: pulse 1.5s infinite;
-    background: linear-gradient(135deg, #dc2626, #ef4444);
-}
+
 
 .inventory-item-button.save {
     color: #2563eb;
-    background-color: rgb(124, 124, 231);
+    background-color: rgba(11, 35, 87, 0.1);
+     
     width: 100px;
     height: 30px;
     align-self: center;
 }
 
 .inventory-item-button.save:hover {
-    background-color: rgba(11, 35, 87, 0.1);
+    background-color:rgb(124, 124, 231);
 }
 
 .save-icon {
-    width: 1.2rem;
-    height: 1.2rem;
+    display : flex;
+    justify-content: flex-end;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 1rem;
+    cursor: pointer;
 }
-.save-icon svg {
+.save-icon:hover{
+    background-color: #cfd8d8;
+    border-radius: 10%;
+}
+.save-icon img {
     max-width: 100%;
     max-height: 100%;
 }

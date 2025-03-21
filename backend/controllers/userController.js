@@ -33,18 +33,11 @@ const loginUser = async (req, res) => {
             [email, password],
             (err, result) => {
                 if (err || result.length === 0) {
-                    console.log('Login failed:', { err, result }); // Debug log
                     return res.status(401).json({ message: "Invalid credentials" });
                 }
                 
-                // Debug logs
-                console.log('Raw DB result:', result[0]);
-                console.log('Email:', result[0].email);
-                console.log('isAdmin value from DB:', result[0].isAdmin);
-                
                 // Check if user is admin
                 const isAdmin = email === 'admin@admin.com' || result[0].isAdmin === 1;
-                console.log('Final isAdmin value:', isAdmin); // Debug log
                 
                 res.status(200).json({
                     message: "Login successful!",
@@ -54,7 +47,6 @@ const loginUser = async (req, res) => {
             }
         );
     } catch (error) {
-        console.error('Login error:', error); // Debug log
         res.status(500).json({ error: "Server error" });
     }
 };

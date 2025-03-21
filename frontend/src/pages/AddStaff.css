@@ -1,0 +1,128 @@
+/* General Reset */
+
+  
+  .a-customer-management {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two-column layout */
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+  
+  .a-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+  }
+  
+  .a-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .a-text-center {
+    text-align: center;
+  }
+  
+  .a-space-y-6 {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .a-input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  
+  .a-form-input {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+  }
+  
+  .a-form-input:focus {
+    border-color: #4299e1;
+    outline: none;
+  }
+  
+  .a-floating-label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #a0aec0;
+    pointer-events: none;
+    transition: all 0.3s;
+  }
+  
+  .a-form-input:focus + .a-floating-label,
+  .a-form-input:not(:placeholder-shown) + .a-floating-label {
+    top: 0;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: #4299e1;
+    padding: 0 0.25rem;
+    background-color: white;
+  }
+  
+  .a-btn {
+    padding: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+  }
+  
+  .a-btn-primary {
+    background: #4299e1;
+    color: white;
+  }
+  
+  .a-btn-primary:hover {
+    background: #3182ce;
+  }
+  
+  .a-w-full {
+    width: 100%;
+  }
+  
+  .a-user-preview {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .a-user-preview h3 {
+    margin-bottom: 1rem;
+    color: #2d3748;
+  }
+  
+  .a-user-preview p {
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .a-customer-management {
+      grid-template-columns: 1fr; /* Single-column layout on smaller screens */
+    }
+  
+    .a-card, .a-user-preview {
+      margin-bottom: 2rem;
+    }
+  }

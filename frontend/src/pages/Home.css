@@ -1,37 +1,58 @@
 /* Layout and Container Styles */
-.containerHome {
+/* .containerHome {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    margin-left: -15px;
-    background-color:#3582cf;
+    justify-content: flex-start;
+    min-height: calc(100vh - 4rem); 
+    background-color: transparent; 
     overflow-x: hidden;
-    padding: 0;
+    padding: 1rem;
     margin: 0;
+    width: 100%;
+} */
 
+/* Add this new container for side-by-side layout */
+ .main-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1800px;
+    margin: 0 auto;
+} 
+
+/* Left side - Scanner */
+.left-section {
+    flex: 1;
+    min-width: 400px;
+    max-width: 600px;
+}
+
+/* Right side - Cart */
+.right-section {
+    flex: 2;
+    min-width: 600px;
 }
 
 /* Scanner Section Styles */
 .scan-container {
     width: 100%;
-    max-width: 500px;
-    margin-bottom: 2rem;
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
 }
 
 .manual-input {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .barcode-input {
     flex: 1;
-    padding: 1rem;
+    padding: .5rem;
     border: 2px solid #e5e7eb;
     border-radius: 8px;
     font-size: 1rem;
@@ -47,7 +68,7 @@
 }
 
 .submit-btn {
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
     color: white;
     border: none;
@@ -102,23 +123,19 @@
 .scan-barcode-button {
     width: 100%;
     padding: 1rem;
-    background: #f8fafc;
-    border: 2px dashed #e5e7eb;
+    color: #f8fafc;
+    border: 2px  #e5e7eb;
     border-radius: 8px;
-    color: #4f46e5;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); 
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
-    transition: all 0.3s ease;
-}
+} 
 
 .scan-barcode-button:hover {
     background: #4f46e5;
-    border-color: #4f46e5;
-    color: white;
 }
 
 .scan-barcode-button.scanning {
@@ -128,15 +145,12 @@
     animation: pulse 1.5s infinite;
 }
 
-/* Add these to the Scanner Button Styles section */
-.scan-barcode-button::before {
-    content: '📷';
-    font-size: 1.5rem;
-}
+
+
 
 .scan-barcode-button.scanning::before {
     content: '⚡';
-}
+} 
 
 /* Add to the hover effects section */
 .scan-container:hover {
@@ -146,12 +160,11 @@
 /* Shopping Cart Styles */
 .cart-container {
     width: 100%;
-    max-width: 1000px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 2rem;
-    margin: 2rem auto;
+    margin: 0;
 }
 
 .cart-container h2 {
@@ -368,4 +381,94 @@
 /* Update remove button container */
 .cart-item > button {
     justify-self: center;
+}
+
+/* Add these styles to your existing Home.css */
+
+.customer-section {
+    width: 100%;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 1rem;
+}
+
+.customer-section input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.customer-section button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.customer-section button:hover {
+    background: #4338ca;
+}
+
+.customer-info {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+}
+.customer-name {
+    font-family: 'Roboto', sans-serif; /* Use the chosen font */
+    font-size: 18px; /* Adjust size as needed */
+    font-weight: 500; /* Medium weight for emphasis */
+    color: #333; /* Dark color for readability */
+}
+
+.available-points {
+    font-family: 'Roboto', sans-serif; /* Use the chosen font */
+    font-size: 16px; /* Adjust size as needed */
+    font-weight: 400; /* Regular weight */
+    color: #555; /* Slightly lighter color */
+}
+.points-earned {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #c6f6d5;
+    color: #2f855a;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.customer-info label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}
+
+.customer-info input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .main-content-wrapper {
+        flex-direction: column;
+    }
+
+    .left-section,
+    .right-section {
+        min-width: 100%;
+        max-width: 100%;
+    }
 }

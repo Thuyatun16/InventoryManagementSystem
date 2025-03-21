@@ -1,6 +1,6 @@
 import React from "react";
 import { useZxing } from "react-zxing";
-import sound from "./assets/sound.mp3";
+import sound from "../../assets/sound.mp3";
 
 function BarcodeScanner({ onScan}) {
   const { ref } = useZxing({

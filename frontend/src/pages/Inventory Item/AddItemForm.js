@@ -31,7 +31,7 @@ function AddItemForm({ formData, setFormData, onAddItem }) {
       </div>
       <div className={`add-form-container ${isOpen ? 'active' : ''}`}>
         <form onSubmit={handleSubmit} className="add-form">
-          <div className="form-group">
+          <div className="AI-form-group">
             <input
               type="text"
               name="name"
@@ -68,15 +68,15 @@ function AddItemForm({ formData, setFormData, onAddItem }) {
               min="0"
             />
             <div className="barcode-group">
-              <input
+              {/* <input
                 type="number"
                 name="barcode"
                 value={formData.barcode}
                 onChange={handleChange}
                 placeholder="Click icon to scan barcode"
                 required 
-              />
-              <HandleBarcodeScanner formData={formData} setFormData={setFormData} />
+              /> */}
+              <HandleBarcodeScanner formData={formData} setFormData={setFormData} className='add-item-barcode-scanner' mode= "icon"/>
             </div>
           </div>
           <button type="submit" className="submit-button">Add Item</button>

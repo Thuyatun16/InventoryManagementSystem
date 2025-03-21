@@ -1,18 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './OrderHistory.css';
-
+import loadingIcon from '../Icon/loading.png';
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [userFilter, setUserFilter] = useState('');
+    const [filters, setFilters] = useState({
+        userFilter: '',
+        orderId: '',
+        startDate: '',
+        endDate: ''
+    });
     const userId = localStorage.getItem('userId');
     const isAdmin = localStorage.getItem('isAdmin') === 'true';
     
-    console.log('OrderHistory Debug:');
-    console.log('userId:', userId);
-    console.log('isAdmin raw value:', localStorage.getItem('isAdmin'));
-    console.log('isAdmin parsed value:', isAdmin);
+    // console.log('OrderHistory Debug:');
+    // console.log('userId:', userId);
+    // console.log('isAdmin raw value:', localStorage.getItem('isAdmin'));
+    // console.log('isAdmin parsed value:', isAdmin);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -25,10 +30,10 @@ const OrderHistory = () => {
                 const response = await axios.get(`http://localhost:5000${endpoint}`, {
                     params: { 
                         isAdmin: isAdmin,
-                        userFilter: userFilter
+                        ...filters
                     }
                 });
-                console.log('response:', response.data);
+                //console.log('response:', response.data);
                 setOrders(response.data);
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -38,15 +43,43 @@ const OrderHistory = () => {
         };
 
         fetchOrders();
-    }, [userId, isAdmin, userFilter]);
+    }, [userId, isAdmin, filters]);
 
-    const filteredOrders = orders.filter(order => 
-        !userFilter || 
-        order.customer_name?.toLowerCase().includes(userFilter.toLowerCase())
-    );
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilters(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
+    const clearFilters = () => {
+        setFilters({
+            userFilter: '',
+            orderId: '',
+            startDate: '',
+            endDate: ''
+        });
+    };
+
+    const filteredOrders = orders.filter(order => {
+        const matchesName = !filters.userFilter || 
+            order.customer_name?.toLowerCase().includes(filters.userFilter.toLowerCase());
+        
+        const matchesOrderId = !filters.orderId ||
+            order.order_id.toString().includes(filters.orderId);
+        
+        const orderDate = new Date(order.order_date);
+        const matchesStartDate = !filters.startDate || 
+            orderDate >= new Date(filters.startDate);
+        const matchesEndDate = !filters.endDate || 
+            orderDate <= new Date(filters.endDate);
+
+        return matchesName && matchesOrderId && matchesStartDate && matchesEndDate;
+    });
+ 
     if (!userId) return <div>Please login to view order history</div>;
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div className='loading-container'><div className='loading-spinner'><img src={loadingIcon} alt='loadingIcon'/></div></div>;
 
     return (
         <div className="order-history">
@@ -54,13 +87,49 @@ const OrderHistory = () => {
             
             {isAdmin && (
                 <div className="filter-section">
-                    <input
-                        type="text"
-                        placeholder="Filter by customer name..."
-                        value={userFilter}
-                        onChange={(e) => setUserFilter(e.target.value)}
-                        className="filter-input"
-                    />
+                    <div className="filter-group">
+                        <input
+                            type="text"
+                            name="userFilter"
+                            placeholder="Filter by customer name..."
+                            value={filters.userFilter}
+                            onChange={handleFilterChange}
+                            className="filter-input"
+                        />
+                        <input
+                            type="text"
+                            name="orderId"
+                            placeholder="Filter by order ID..."
+                            value={filters.orderId}
+                            onChange={handleFilterChange}
+                            className="filter-input"
+                        />
+                    </div>
+                    <div className="filter-group">
+                        <div className="date-filter">
+                            <label>Start Date:</label>
+                            <input
+                                type="date"
+                                name="startDate"
+                                value={filters.startDate}
+                                onChange={handleFilterChange}
+                                className="filter-input"
+                            />
+                        </div>
+                        <div className="date-filter">
+                            <label>End Date:</label>
+                            <input
+                                type="date"
+                                name="endDate"
+                                value={filters.endDate}
+                                onChange={handleFilterChange}
+                                className="filter-input"
+                            />
+                        </div>
+                    </div>
+                    <button onClick={clearFilters} className="clear-filters-btn">
+                        Clear Filters
+                    </button>
                 </div>
             )}
 
@@ -94,7 +163,9 @@ const OrderHistory = () => {
                                 ))}
                             </div>
                             <div className="order-total">
-                                Total: ${order.total_amount}
+                                <span>Total: ${order.total_amount}</span>
+                                <span>Discount: ${order.discount}</span>
+                                <span>Final Amount: ${order.final_amount}</span>
                             </div>
                         </div>
                     ))

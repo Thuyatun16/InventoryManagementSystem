@@ -1,0 +1,137 @@
+.purchase-orders {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.purchase-orders h2 {
+    color: #2d3748;
+    margin-bottom: 2rem;
+}
+
+.create-order-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.PO-form-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.PO-form-group input {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.submit-btn {
+    background-color: #4299e1;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #3182ce;
+}
+
+.orders-list {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.order-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.order-id {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status.pending {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.status.received {
+    background-color: #dcfce7;
+    color: #16a34a;
+}
+
+.order-details {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.receive-btn {
+    background-color: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.receive-btn:hover {
+    background-color: #059669;
+}
+
+@media (max-width: 640px) {
+    .purchase-orders {
+        padding: 1rem;
+    }
+
+    .PO-form-group {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Add these styles */
+select option.low-stock {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.PO-form-group select {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    width: 100%;
+}
+
+.PO-form-group select option {
+    padding: 0.5rem;
+} 
