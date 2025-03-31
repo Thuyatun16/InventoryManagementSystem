@@ -1,7 +1,78 @@
 .customer-management {
-    padding: 2rem;
+    padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+}
+
+.customer-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-customer-btn {
+    background:none;
+    border: none;
+    margin-top: auto;
+    margin-right: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-customer-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.customer-list {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.customer-grid {
+    gap: 20px;
+    width: 100%;
+}
+
+.customer-header {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-weight: bold;
+}
+.staff-customer-header{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.customer-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+.staff-customer-row{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.customer-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
 }
 
 .customer-management h2 {
@@ -88,7 +159,8 @@ btn-primary-a{
 }
 
 .customer-header, .customer-row {
-    display: flex; /* Use flexbox for alignment */
+    display: grid;
+    gap: 1rem;
     justify-content: space-between; /* Space items evenly */
     align-items: center; /* Center items vertically */
     padding: 10px; /* Add some padding for spacing */
@@ -179,4 +251,4 @@ btn-primary-a{
         justify-content: flex-start;
         margin-top: 0.5rem;
     }
-} 
+}

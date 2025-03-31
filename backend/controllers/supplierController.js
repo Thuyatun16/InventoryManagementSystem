@@ -102,7 +102,7 @@ const updateSupplier = async (req, res) => {
                 WHERE id = ?
             `;
 
-            db.query(updateQuery, [name,phone_number,email,address], (err) => {
+            db.query(updateQuery, [name,phone_number,email,address,id], (err) => {
                 if (err) {
                     console.error('Error updating supplier:', err);
                     return res.status(500).json({

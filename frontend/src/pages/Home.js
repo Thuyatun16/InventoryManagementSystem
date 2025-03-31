@@ -98,17 +98,19 @@ calculateTotal();
                     price: Number(item.sellPrice),
                     subtotal: item.subtotal
                 })),
-                total_amount: calculateTotal() - discount,
-                customer_id: customer?.id,
-                use_points: usePoints,
+                total_amount: calculateTotal(),
+                customer_id: customer? customer.id : null,
+                use_points: customer && usePoints,
                 userId: localStorage.getItem('userId')
             };
             for (const item of cartItems) {
-                await axios.post('http://localhost:5000/sell', {
+               const res =  await axios.post('http://localhost:5000/sell', {
                     id: item.id,
                     soldQuantity: item.sellQuantity
                 });
+                alert (res.data.message);
             }
+            
             const response = await axios.post('http://localhost:5000/checkout', orderData);
             console.log(cartItems, 'This is cart items');
             /*if (usePoints) {
@@ -124,32 +126,37 @@ calculateTotal();
                 discount = redeemResponse.data.discount_amount;
             }
             */
-           console.log(response.data, 'THis is point redeem data');
-           discount = response.data.discount;
-           if(usePoints && discount > 0){
-            final_amount = total - discount;
-            //console.log("Discount applied: $" ,final_amount);
-           }
-            if (response.data.points_earned) {
+            if (customer && usePoints && response.data.discount > 0) {
+                discount = response.data.discount;
+                final_amount = total - discount;
+            }
+    
+            if (customer && response.data.points_earned) {
                 setPointsEarned(response.data.points_earned);
                 setShowPointsMessage(true);
             }
-
+    
+            // Clear cart and reset total
             setCartItems([]);
             setTotal(0);
-            if(pointsEarned > 0){
+    
+            // Display appropriate success message
+            if (customer && pointsEarned > 0) {
                 alert(`Sale completed successfully! Discount applied: $${discount}. ${customer.name} earned ${pointsEarned} points from this purchase!`);
-            }else
-            alert(`Sale completed successfully! Discount applied: $${discount}.
-                The Total Amount is $${final_amount}`);
-          await axios.post('http://localhost:5000/update-analytics',{
-            orderId : response.data.orderId
-          } );      
+            } else {
+                alert(`Sale completed successfully! Discount applied: $${discount}. The Total Amount is $${final_amount}`);
+            }
+    
+            // Update analytics
+            await axios.post('http://localhost:5000/update-analytics', {
+                orderId: response.data.orderId
+            });
         } catch (error) {
             console.error('Error during checkout:', error);
-            alert('Error processing sale');
+            alert(error.response?.data?.message || 'An error occurred during checkout');
         }
-    }
+        
+    };
 
     const handleRemoveItem = (index) => {
         setCartItems(prev => prev.filter((_, i) => i !== index));

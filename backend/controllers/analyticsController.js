@@ -221,7 +221,7 @@ GROUP BY
         const [salesSummaryResults] = await db.promise().query(salesSummaryQuery);
         const [recentOrdersResults] = await db.promise().query(recentOrdersQuery);
         const [inventoryAlertsResults] = await db.promise().query(inventoryAlertsQuery);
-        console.log(profitResults);
+        //console.log(profitResults);
         // Send response
         res.json({
             productAnalytics: productResults,

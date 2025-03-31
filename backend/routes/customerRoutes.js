@@ -21,6 +21,18 @@ router.put('/customers/:id', checkAdmin, customerController.updateCustomer);
 router.delete('/customers/:id', checkAdmin, customerController.deleteCustomer);
 
 // Add these routes to your existing customerRoutes.js
-router.get('/point-transactions', customerController.getPointTransactions);
+// Allow both admin and staff to access point transactions
+router.get('/point-transactions', (req, res, next) => {
+    // Check if user is admin or staff
+    const isAdmin = req.headers['is-admin'] === 'true';
+    const userId = req.headers['user-id'];
+    
+    // Allow access if user has valid credentials
+    if (userId && (isAdmin || true)) { // Allow all authenticated users with a userId
+        next();
+    } else {
+        return res.status(403).json({ message: 'Access denied' });
+    }
+}, customerController.getPointTransactions);
 
-module.exports = router; 
+module.exports = router;

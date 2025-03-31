@@ -83,7 +83,7 @@ const OrderHistory = () => {
 
     return (
         <div className="order-history">
-            <h2>{isAdmin ? 'All Orders History' : 'Order History'}</h2>
+            <h2>{isAdmin ? 'All Sale History' : 'Sale History'}</h2>
             
             {isAdmin && (
                 <div className="filter-section">

@@ -32,9 +32,12 @@ const Layout = ({ onLogout }) => {
         <div className="layout-container">
             <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
                 <div className="sidebar-header ">
-                    <Link to="/" className="logo">
-                        <img src={logoIcon} alt="Logo Icon" />
-                    </Link>
+                    <div className="logo-container">
+                        <Link to="/" className="logo">
+                            <img src={logoIcon} alt="Logo Icon" />
+                            <span className="logo-text">IMSfOS</span>
+                        </Link>
+                    </div>
                     <button 
                         className="collapse-btn"
                         onClick={() => setSidebarCollapsed(!isSidebarCollapsed)}
@@ -54,7 +57,7 @@ const Layout = ({ onLogout }) => {
                     </Link>
 
                      
-                        <Link
+                       {isAdmin &&<Link
                             to="/dashboard"
                             onClick={() => handleLinkClick('dashboard')}
                             className={`sidebar-item ${activeLink === 'dashboard' ? 'active' : ''}`}
@@ -62,7 +65,7 @@ const Layout = ({ onLogout }) => {
                             <img src={dashboardIcon} alt="Dashboard Icon" />
                             <span>Dashboard</span>
                         </Link>
-                   
+                       }
 
                     <Link
                         to="/orderHistory"
@@ -110,7 +113,7 @@ const Layout = ({ onLogout }) => {
                         <img src={customerIcon} alt="Customer Icon" />
                         <span>Customers</span>
                     </Link>
-                    <Link
+                   {isAdmin && <Link
                         to="/supplier-management"
                         onClick={() => handleLinkClick('supplier-management')}
                         className={`sidebar-item ${activeLink === 'supplier-management' ? 'active' : ''}`}
@@ -118,6 +121,7 @@ const Layout = ({ onLogout }) => {
                         <img src={supplierIcon} alt="Supplier" />
                         <span>Suppliers</span>
                     </Link>
+                    }
                    {isAdmin&& <Link
                         to="/add-staff"
                         onClick={() => handleLinkClick('add-staff')}

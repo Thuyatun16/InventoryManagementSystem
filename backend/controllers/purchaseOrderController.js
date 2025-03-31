@@ -1,4 +1,7 @@
 const { db } = require('../config/db');
+const nodemailer = require('nodemailer');
+// Remove this line
+
 
 const getAllOrders = async (req, res) => {
     try {
@@ -153,10 +156,125 @@ const deleteOrder = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+const sentOrderEmail = async (req, res) => {
+    const { to, subject, orderDetails } = req.body;
+    try{
+        //console.log(to,subject,orderDetails,"test");
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER, // Your Gmail email
+                pass: process.env.EMAIL_APP_PASSWORD // Your Gmail app password
+            }
+        });
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: to,
+            subject: subject,
+            html: `
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Order Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #0073e6;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .content p {
+            margin: 10px 0;
+        }
+        .content strong {
+            color: #0073e6;
+        }
+        .footer {
+            background-color: #f9f9f9;
+            padding: 15px;
+            text-align: center;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            font-size: 12px;
+            color: #666666;
+        }
+        .footer a {
+            color: #0073e6;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header Section -->
+        <div class="header">
+            <img src="https://www.flaticon.com/free-icon/barcode_6215978?term=barcode+scanner&page=1&position=53&origin=search&related_id=6215978" alt="Shop Logo">
+            <h2>Purchase Order Details</h2>
+        </div>
+
+        <!-- Content Section -->
+        <div class="content">
+            <p><strong>Order ID:</strong> ${orderDetails.orderId}</p>
+            <p><strong>Item:</strong> ${orderDetails.item}</p>
+            <p><strong>Quantity:</strong> ${orderDetails.quantity}</p>
+            <p><strong>Expected Delivery Date:</strong> ${orderDetails.expectedDate}</p>
+            <p>Please confirm receipt of this order.</p>
+            <p>Thank you,<br><strong>Shop Owner</strong></p>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer">
+            <p>You are receiving this email because you are a registered supplier with us. If you have any questions, please contact us at <a href="mailto:support@shopowner.com">support@shopowner.com</a>.</p>
+            <p>&copy; 2025 Shop Owner. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+            `
+        };
+         // Send email
+         await transporter.sendMail(mailOptions);
+         res.status(200).json({ message: 'Email sent successfully' });
+    }
+    catch(err){
+        console.error('Error sending email:',err);
+        res.status(500).json({ message: 'Failed to send email' });
+    }
+    };
 
 module.exports = {
     getAllOrders,
     createOrder,
     receiveOrder,
-    deleteOrder
-}; 
+    deleteOrder,
+    sentOrderEmail
+};

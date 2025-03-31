@@ -36,7 +36,7 @@ const CustomerPoints = () => {
 
     const fetchTransactions = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/point-transactions',{
+            const response = await axios.get('http://localhost:5000/point-transactions', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'user-id': localStorage.getItem('userId'),
@@ -81,7 +81,7 @@ const CustomerPoints = () => {
             <h2>Customer Points System</h2>
 
             {/* Point Settings Section */}
-            <div className="point-settings-section">
+           { isAdmin && <div className="point-settings-section">
                 <h3>Point Settings</h3>
                 {isAdmin && !isEditing ? (
                     <button onClick={() => setIsEditing(true)} className="edit-btn">
@@ -143,7 +143,7 @@ const CustomerPoints = () => {
                         <p>Minimum points needed: {settings.minimum_points_for_discount}</p>
                     </div>
                 )}
-            </div>
+            </div>}
 
             {/* Transactions Section */}
             <div className="transactions-section">
@@ -171,4 +171,4 @@ const CustomerPoints = () => {
     );
 };
 
-export default CustomerPoints; 
+export default CustomerPoints;

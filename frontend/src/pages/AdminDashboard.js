@@ -85,7 +85,7 @@
             }));
           }, [analytics.monthlyProfits, analytics.salesSummary]);
 
-        if (loading) return <div className = 'loading-container'><div className="loading-spinner"><img src={loadingIcon} alt='LoadingIcon'/></div></div>;if (loading) return <div className = 'loading-container'><div className="loading-spinner"><img src={loadingIcon} alt='LoadingIcon'/></div></div>;
+        if (loading) return <div className = 'loading-container'><div className="loading-spinner"><img src={loadingIcon} alt='LoadingIcon'/></div></div>;
 
         return (
             <div className="admin-dashboard">

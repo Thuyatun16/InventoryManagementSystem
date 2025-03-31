@@ -17,5 +17,6 @@ router.put('/purchase-orders/:id/receive', purchaseOrderController.receiveOrder)
 
 // Delete purchase order (optional)
 router.delete('/purchase-orders/:id', purchaseOrderController.deleteOrder);
+router.post('/send-order-email',purchaseOrderController.sentOrderEmail);
 
 module.exports = router; 

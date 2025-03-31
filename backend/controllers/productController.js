@@ -2,15 +2,15 @@ const {  db } = require('../config/db');
 
 // Create Product
 const createProduct = async (req, res) => {
-    const { name, quantity, barcode, price, sellPrice } = req.body;
+    const { name, quantity, barcode, price, sellPrice, category_id } = req.body;
 
     if (!name || !quantity || !barcode) {
         return res.status(400).json({ error: 'Required fields missing' });
     }
 
     try {
-        const sql = 'INSERT INTO items (name, quantity, barcode, price, sellPrice) VALUES (?, ?, ?, ?, ?)';
-        db.query(sql, [name, quantity, barcode, price, sellPrice], (err, result) => {
+        const sql = 'INSERT INTO items (name, quantity, barcode, price, sellPrice, category_id) VALUES (?, ?, ?, ?, ?, ?)';
+        db.query(sql, [name, quantity, barcode, price, sellPrice, category_id], (err, result) => {
             if (err) {
                 return res.status(500).json({ error: 'Database error' });
             }
@@ -24,29 +24,46 @@ const createProduct = async (req, res) => {
 // Get All Products
 const getAllProducts = async (req, res) => {
     try {
-        db.query('SELECT * FROM items', (err, items) => {
+        // Check if database connection is active
+        if (!db || !db.config) {
+            console.error('Database connection not established');
+            return res.status(500).json({ message: 'Database connection error' });
+        }
+
+        const query = `
+            SELECT i.*, c.name as category_name 
+            FROM items i 
+            LEFT JOIN categories c ON i.category_id = c.id
+        `;
+
+        db.query(query, (err, items) => {
             if (err) {
-                return res.status(500).json({ message: 'Failed to fetch items', error: err.message });
+                console.error('Database query error:', err);
+                return res.status(500).json({ 
+                    message: 'Failed to fetch items', 
+                    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+                });
             }
             res.status(200).json(items);
         });
     } catch (error) {
-        res.status(500).json({ error: "Server error" });
+        console.error('Server error in getAllProducts:', error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
 // Update Product
 const updateProduct = async (req, res) => {
     const { id } = req.params;
-    const { name, quantity, price, sellPrice } = req.body;
+    const { name, quantity, price, sellPrice, category_id } = req.body;
 
     if (!name || !quantity) {
         return res.status(400).json({ error: 'Name and quantity are required' });
     }
 
     try {
-        const query = 'UPDATE items SET name =?, quantity = ?, price = ?, sellPrice = ? WHERE id = ?';
-        db.query(query, [name, quantity, price, sellPrice, id], (err, result) => {
+        const query = 'UPDATE items SET name =?, quantity = ?, price = ?, sellPrice = ?, category_id = ? WHERE id = ?';
+        db.query(query, [name, quantity, price, sellPrice, category_id, id], (err, result) => {
             if (err) {
                 return res.status(500).json({ error: 'Server Error' });
             }
@@ -63,19 +80,45 @@ const updateProduct = async (req, res) => {
 // Delete Product
 const deleteProduct = async (req, res) => {
     const { id } = req.params;
+    if (!id || isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid item ID' });
+    }
     try {
-        const query = 'DELETE from items WHERE id = ?';
-        db.query(query, [id], (err, result) => {
+        // Check for both purchase orders and order history
+        const checkQuery = `
+            SELECT 
+                (SELECT COUNT(*) FROM purchase_orders WHERE item_id = ?) as purchaseCount,
+                (SELECT COUNT(*) FROM order_items WHERE item_id = ?) as orderCount
+        `;
+        db.query(checkQuery, [id, id], (err, results) => {
             if (err) {
-                return res.status(500).json({ error: 'Server error' });
+                console.error('Database error:', err);
+                return res.status(500).json({ error: 'Database operation failed' });
             }
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: 'Item not found' });
+
+            if (results[0].purchaseCount > 0 || results[0].orderCount > 0) {
+                return res.status(400).json({
+                    error: 'Cannot delete item',
+                    message: 'This item has associated orders or purchase orders. Cannot delete items with order history.'
+                });
             }
-            res.status(200).json({ message: 'Item deleted successfully' });
+
+            // If no purchase orders exist, proceed with deletion
+            const deleteQuery = 'DELETE FROM items WHERE id = ?';
+            db.query(deleteQuery, [id], (err, result) => {
+                if (err) {
+                    console.error('Database error:', err);
+                    return res.status(500).json({ error: 'Database operation failed' });
+                }
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ error: 'Item not found' });
+                }
+                res.status(200).json({ message: 'Item deleted successfully' });
+            });
         });
     } catch (error) {
-        res.status(500).json({ error: "Server error" });
+        console.error('Server error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -146,48 +189,50 @@ const processCheckout = async (req, res) => {
             const [pointSettings] = await db.promise().query('SELECT * FROM point_settings ORDER BY id DESC LIMIT 1');
             const { points_per_amount, discount_per_point, minimum_points_for_discount } = pointSettings[0];
 
-            // Create order history record
-           
-            // Calculate points earned
-            const pointsEarned = Math.floor(total_amount * points_per_amount);
-
-            // Redeem points if applicable
+            let pointsEarned = 0;
             let pointsRedeemed = 0;
             let discount = 0;
-            let final_amount = 0;
-            if (use_points) {
-                const [customerResults] = await db.promise().query(
-                    'SELECT points FROM customers WHERE id = ?',
-                    [customer_id]
-                );
-                const customer = customerResults[0];
+            let final_amount = total_amount;
 
-                if (customer.points >= minimum_points_for_discount) {
-                    const maxDiscount = Math.floor(customer.points/minimum_points_for_discount)* discount_per_point;
-                     discount = Math.min(maxDiscount,total_amount);
-                    pointsRedeemed = Math.floor(discount / discount_per_point)*minimum_points_for_discount;
-                    const total_spent = total_amount - discount;
-                    // Update customer points
-                    await db.promise().query(
-                        'UPDATE customers SET points = points - ? WHERE id = ?',
-                        [pointsRedeemed, customer_id]
+            // Only process customer-related logic if customer_id is provided
+            if (customer_id) {
+                // Calculate points earned
+                pointsEarned = Math.floor(total_amount * points_per_amount);
+
+                if (use_points) {
+                    const [customerResults] = await db.promise().query(
+                        'SELECT points FROM customers WHERE id = ?',
+                        [customer_id]
                     );
+                    const customer = customerResults[0];
+
+                    if (customer.points >= minimum_points_for_discount) {
+                        const maxDiscount = Math.floor(customer.points / minimum_points_for_discount) * discount_per_point;
+                        discount = Math.min(maxDiscount, total_amount);
+                        pointsRedeemed = Math.floor(discount / discount_per_point) * minimum_points_for_discount;
+                        final_amount = total_amount - discount;
+
+                        // Update customer points (deduct redeemed points)
+                        await db.promise().query(
+                            'UPDATE customers SET points = points - ? WHERE id = ?',
+                            [pointsRedeemed, customer_id]
+                        );
+                    }
                 }
+
+                // Add earned points and update total spent
+                await db.promise().query(
+                    'UPDATE customers SET points = points + ?, total_spent = total_spent + ? WHERE id = ?',
+                    [pointsEarned, final_amount, customer_id]
+                );
             }
-            
-            final_amount = total_amount - discount;
-            console.log(final_amount,'this is final amount');
-            // Update customer points with earned points
-            await db.promise().query(
-                'UPDATE customers SET points = points + ?, total_spent = total_spent + ? WHERE id = ?',
-                [pointsEarned,final_amount, customer_id]
-            );
+
+            // Create order history record (customer_id can be null)
             const [orderResult] = await db.promise().query(
-                'INSERT INTO order_history (user_id, total_amount,discount,final_amount) VALUES (?, ?,?,?)',
-                [userId, total_amount,discount,final_amount]
+                'INSERT INTO order_history (user_id, total_amount, discount, final_amount, customer_id) VALUES (?, ?, ?, ?, ?)',
+                [userId, total_amount, discount, final_amount, customer_id || null]
             );
-          
-            const orderId = orderResult.insertId; // Get the orderId immediately after creating the order
+            const orderId = orderResult.insertId;
 
             // Insert order items
             const orderItems = items.map(item => [
@@ -201,33 +246,41 @@ const processCheckout = async (req, res) => {
                 'INSERT INTO order_items (order_id, item_id, quantity, price_at_time, subtotal) VALUES ?',
                 [orderItems]
             );
-            // Insert into point_transactions
-            await db.promise().query(
-                'INSERT INTO point_transactions (customer_id, order_id, points_earned, points_redeemed) VALUES (?, ?, ?, ?)',
-                [customer_id, orderId, pointsEarned, pointsRedeemed]
-            );
+
+            // Record point transactions only if customer_id exists
+            if (customer_id) {
+                await db.promise().query(
+                    'INSERT INTO point_transactions (customer_id, order_id, points_earned, points_redeemed) VALUES (?, ?, ?, ?)',
+                    [customer_id, orderId, pointsEarned, pointsRedeemed]
+                );
+            }
 
             await db.promise().commit();
-            res.json({ message: 'Order created successfully', orderId, points_earned: pointsEarned, pointsRedeemed: pointsRedeemed, discount: discount});
+            res.json({
+                message: 'Order created successfully',
+                orderId,
+                points_earned: customer_id ? pointsEarned : 0, // Return 0 points if no customer
+                pointsRedeemed,
+                discount
+            });
         } catch (error) {
             await db.promise().rollback();
             throw error;
         }
     } catch (error) {
         console.error('Checkout error:', error);
-        res.status(500).json({ error: "Server error", details: error.message });
+        res.status(500).json({ error: 'Server error', details: error.message });
     }
 };
-
 // Get Orders
 const getOrders = async (req, res) => {
     const userId = req.params.userId;
     const isAdmin = req.query.isAdmin === 'true';
     const userFilter = req.query.userFilter || '';
     
-    console.log("checking isAdmin", isAdmin);
-    console.log("checking userId", userId);
-    console.log("checking userFilter", userFilter);
+    // console.log("checking isAdmin", isAdmin);
+    // console.log("checking userId", userId);
+    // console.log("checking userFilter", userFilter);
     
     try {
         const query = isAdmin ? 
@@ -389,4 +442,4 @@ module.exports = {
     processCheckout,
     getOrders,
     redeemPoints
-}; 
+};

@@ -297,7 +297,7 @@ const createCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
     const { id } = req.params;
-    const { phone_number, name, points } = req.body;
+    const { phone_number, name, points, total_spent } = req.body;
 
     try {
         // Check if phone number exists for other customers
@@ -318,11 +318,11 @@ const updateCustomer = async (req, res) => {
             // Update customer
             const updateQuery = `
                 UPDATE customers 
-                SET phone_number = ?, name = ?, points =?
+                SET phone_number = ?, name = ?, points = ?, total_spent = ?
                 WHERE id = ?
             `;
 
-            db.query(updateQuery, [phone_number, name, points, id], (err) => {
+            db.query(updateQuery, [phone_number, name, points,total_spent, id], (err) => {
                 if (err) {
                     console.error('Error updating customer:', err);
                     return res.status(500).json({
@@ -335,7 +335,8 @@ const updateCustomer = async (req, res) => {
                     id,
                     phone_number,
                     name,
-                    points
+                    points,
+                    total_spent
                 });
             });
         });

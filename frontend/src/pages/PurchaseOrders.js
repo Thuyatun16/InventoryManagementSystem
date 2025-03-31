@@ -8,6 +8,7 @@ const PurchaseOrders = () => {
     const[loading,setLoading] = useState(true);
     const [inventoryItems, setInventoryItems] = useState([]);
     const [supplier, setSupplier] = useState([]);
+    const [emailStatus, setEmailStatus] = useState('');
     const [newOrder, setNewOrder] = useState({
         item_id: '',
         quantity: '',
@@ -23,18 +24,18 @@ const PurchaseOrders = () => {
        
     }, []);
 
+    // Existing fetch functions remain the same
     const fetchInventoryItems = async () => {
         try {
             const response = await axios.get('http://localhost:5000/read');
             // Sort items by quantity (lowest first)
             const sortedItems = response.data.sort((a, b) => a.quantity - b.quantity);
-            // const supplier = await axios.get ('http://localhost:5000/suppliers');
-            // setSupplier(supplier.data);
             setInventoryItems(sortedItems);
         } catch (error) {
             console.error('Error fetching inventory items:', error);
         }
     };
+    
     const fetchSupplier = async () => {
         const response = await axios.get('http://localhost:5000/suppliers',{
          headers: {
@@ -44,6 +45,7 @@ const PurchaseOrders = () => {
     }});
         setSupplier(response.data);
     };
+    
     const fetchPurchaseOrders = async () => {
         try {
             const response = await axios.get('http://localhost:5000/purchase-orders', {
@@ -54,7 +56,6 @@ const PurchaseOrders = () => {
                 }
             });
             setOrders(response.data);
-            console.log(orders, 'this is orders');//debuggingggggg
             setLoading(false);
         } catch (error) {
             console.error('Error fetching purchase orders:', error);
@@ -70,16 +71,53 @@ const PurchaseOrders = () => {
         }));
     };
 
+    // Modified submit handler to include email functionality
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        setEmailStatus('');
+        
         try {
-            await axios.post('http://localhost:5000/purchase-orders', newOrder, {
+            // First, get the item and supplier details for the email
+            const selectedItem = inventoryItems.find(item => item.id === newOrder.item_id);
+            const selectedSupplier = supplier.find(sup => sup.id === parseInt(newOrder.supplier_id));
+            
+            if (!selectedItem || !selectedSupplier) {
+                throw new Error('Item or supplier not found');
+            }
+            
+            // Create the order
+            const orderResponse = await axios.post('http://localhost:5000/purchase-orders', newOrder, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'user-id': localStorage.getItem('userId'),
                     'is-admin': localStorage.getItem('isAdmin')
                 }
             });
+            
+            // Prepare email data
+            const emailData = {
+                to: selectedSupplier.email,
+                subject: `Purchase Order for ${selectedItem.name}`,
+                orderDetails: {
+                    item: selectedItem.name,
+                    quantity: newOrder.quantity,
+                    expectedDate: new Date(newOrder.expected_date).toLocaleDateString(),
+                    supplier: selectedSupplier.name,
+                    orderId: orderResponse.data.orderId || 'New Order'
+                }
+            };
+            
+            // Send the email
+            await axios.post('http://localhost:5000/send-order-email', emailData, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'user-id': localStorage.getItem('userId'),
+                    'is-admin': localStorage.getItem('isAdmin')
+                }
+            });
+            
+            setEmailStatus('Order created and email sent to supplier successfully!');
             setNewOrder({
                 item_id: '',
                 quantity: '',
@@ -88,7 +126,10 @@ const PurchaseOrders = () => {
             });
             fetchPurchaseOrders();
         } catch (error) {
-            console.error('Error creating purchase order:', error);
+            console.error('Error processing order:', error);
+            setEmailStatus(`Error: ${error.response?.data?.message || error.message || 'Failed to process order'}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -117,6 +158,7 @@ const PurchaseOrders = () => {
             {/* Create New Order Form */}
             <div className="create-order-form">
                 <h3>Create New Purchase Order</h3>
+                {emailStatus && <div className={emailStatus.includes('Error') ? 'error-message' : 'success-message'}>{emailStatus}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="PO-form-group">
                         <select
@@ -145,7 +187,7 @@ const PurchaseOrders = () => {
                             onChange={handleInputChange}
                             required
                         />
-                          <select
+                        <select
                             name="supplier_id"
                             value={newOrder.supplier_id}
                             onChange={handleInputChange}
@@ -173,7 +215,7 @@ const PurchaseOrders = () => {
                 </form>
             </div>
 
-            {/* Orders List */}
+            {/* Orders List - remains the same */}
             <div className="orders-list">
                 <h3>Current Orders</h3>
                 {orders.map(order => (
@@ -206,4 +248,4 @@ const PurchaseOrders = () => {
     );
 };
 
-export default PurchaseOrders; 
+export default PurchaseOrders;

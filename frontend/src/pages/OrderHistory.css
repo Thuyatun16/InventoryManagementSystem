@@ -185,9 +185,9 @@
     }
 } 
 .loading-container{
-    display: flex;
+    display: grid;
     justify-content: center;
-    align-items: top;
+    align-items: center;
     height: 100vh;
   }
 .loading-spinner {
