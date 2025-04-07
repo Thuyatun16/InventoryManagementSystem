@@ -130,7 +130,7 @@ const getInventoryAnalytics = async (req, res) => {
      AND order_date < DATE_SUB(CURRENT_DATE, INTERVAL 1 ${timeRange.toUpperCase()})`);
         const currentOrders = currentPeriodOrders[0].total_orders || 0;
         const previousOrders = previousPeriodOrders[0].total_orders || 0;
-        const orderGrowth = previousOrders > 0 ?Math.round(
+        const orderGrowth = previousOrders > 0 ? Math.round(
             ((currentOrders - previousOrders) / previousOrders)) * 100 : 0;
         //console.log(orderGrowth, 'orderGrowth');
 
@@ -160,7 +160,7 @@ WHERE
     oh.order_date >= ${dateCondition}
 GROUP BY 
     DATE_FORMAT(oh.order_date, '%Y-%m')`;
-           
+
         // Get top products
         const topProductsQuery = `
             SELECT 
@@ -199,19 +199,18 @@ GROUP BY
         // Get inventory alerts
         const inventoryAlertsQuery = `
             SELECT 
-                id,
-                item_name as product_name,
-                stock_level,
-                CASE 
-                    WHEN stock_level <= 10 THEN 'Low Stock'
-                    ELSE 'Normal'
-                END as type,
-                CASE 
-                    WHEN stock_level <= 10 THEN CONCAT('Only ', stock_level, ' units left!')
-                    ELSE 'Stock level is normal.'
-                END as message
-            FROM sales_analytics
-            WHERE stock_level <= 10
+            sa.id,
+            sa.item_name AS product_name,
+            sa.stock_level,
+            'Low Stock' AS type,
+            CONCAT('Only ', sa.stock_level, ' units left!') AS message
+            FROM sales_analytics sa
+            WHERE sa.stock_level <= 10
+            AND sa.id = (
+            SELECT MAX(sub.id) 
+            FROM sales_analytics sub 
+            WHERE sub.item_name = sa.item_name
+            )
         `;
 
         // Execute all queries
