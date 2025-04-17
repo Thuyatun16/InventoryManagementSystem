@@ -10,7 +10,7 @@ const {
     processCheckout,
     getOrders
 } = require('../controllers/productController');
-const {createOrder} = require('../controllers/purchaseOrderController');
+
 const {getInventoryAnalytics,updateAnalytics} = require('../controllers/analyticsController');
 const { checkAdmin } = require('../middleware/authMiddleware');
 // CRUD routes
