@@ -15,8 +15,6 @@ const Home = () => {
     const [usePoints, setUsePoints] = useState(false);
     const [showPointsMessage, setShowPointsMessage] = useState(false);
 
-
-
     useEffect(() => {
         if (showPointsMessage) {
             // Reset the page state except for the points message
@@ -113,19 +111,7 @@ calculateTotal();
             
             const response = await axios.post('http://localhost:5000/checkout', orderData);
             console.log(cartItems, 'This is cart items');
-            /*if (usePoints) {
-                const redeemResponse = await axios.post(`http://localhost:5000/customers/${customer.id}/points/redeem`, {
-                    points_to_redeem: customer.points
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'user-id': localStorage.getItem('userId'),
-                        'is-admin': localStorage.getItem('isAdmin')
-                    }
-                });
-                discount = redeemResponse.data.discount_amount;
-            }
-            */
+            console.log(response.data, 'This is response data');
             if (customer && usePoints && response.data.discount > 0) {
                 discount = response.data.discount;
                 final_amount = total - discount;
@@ -148,9 +134,10 @@ calculateTotal();
             }
     
             // Update analytics
-            await axios.post('http://localhost:5000/update-analytics', {
+           const updateResponse =  await axios.post('http://localhost:5000/update-analytics', {
                 orderId: response.data.orderId
             });
+            console.log(updateResponse.data, 'This is update response data');
         } catch (error) {
             console.error('Error during checkout:', error);
             alert(error.response?.data?.message || 'An error occurred during checkout');

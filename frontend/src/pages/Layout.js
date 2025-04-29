@@ -13,6 +13,7 @@ import logoutIcon from '../Icon/logout.png';
 import purchaseIcon from '../Icon/checklist.png';
 import staffIcon from '../Icon/staff.png';
 
+
 const Layout = ({ onLogout }) => {
     const [activeLink, setActiveLink] = useState(null);
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
