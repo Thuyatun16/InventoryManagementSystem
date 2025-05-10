@@ -29,7 +29,7 @@ const loginUser = async (req, res) => {
     
     try {
         db.query(
-            "SELECT id, email, isAdmin FROM user_table WHERE email = ? AND password = ?",
+            "SELECT id, email, isAdmin FROM user_table WHERE is_active = TRUE AND email = ? AND password = ?",
             [email, password],
             (err, result) => {
                 if (err || result.length === 0) {
@@ -52,7 +52,7 @@ const loginUser = async (req, res) => {
 };
 const getUser = async(req, res) => {
    try{
-    const query = "SELECT * FROM user_table WHERE isAdmin = 0";
+    const query = "SELECT * FROM user_table WHERE isAdmin = 0 AND is_active = TRUE";
    db.query(query,(err,user)=>{
     if(err){
         console.log(err,'database Error');
@@ -96,7 +96,7 @@ const deleteUser = async (req, res) => {
     
     try {
         db.query(
-            "DELETE FROM user_table WHERE id = ? AND isAdmin = 0",
+            "UPDATE user_table SET is_active= FALSE WHERE id = ?",
             [id],
             (err, result) => {
                 if (err) {

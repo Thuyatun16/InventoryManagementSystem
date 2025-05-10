@@ -4,13 +4,84 @@
     margin: 0 auto;
 } 
 @media screen and (max-width: 768px) {
-    .Supplier-management {
-        padding: 0;
-        align-items: center;
-        margin : 0;
-    }
-  
+  .Supplier-management {
+      padding: 1rem;
+      align-items: center;
+      margin: 0;
+      width: 100%;
+  }
+
+  .registration-card {
+      padding: 1rem;
+      margin: 1rem;
+      width: calc(100% - 2rem);
+  }
+
+  .form-grid {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 1rem;
+      width: 100%;
+      grid-template-columns: unset;
+  }
+
+  .form-grid input {
+      width: 100%;
+      max-width: none;
+      padding: 0.875rem;
+  }
+
+  .form-actions {
+      flex-direction: column;
+      width: 100%;
+      gap: 0.5rem;
+      grid-column: unset;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+      width: 100%;
+      margin: 0;
+      padding: 0.875rem;
+  }
+
+  .CM-form-group {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+  }
+
+  .CM-form-group input {
+      max-width: none;
+      width: 100%;
+  }
+
+  .CM-form-group button {
+      width: 100%;
+  }
 }
+@media screen and (max-width: 480px) {
+  .Supplier-management {
+      padding: 0.5rem;
+  }
+
+  .registration-card {
+      padding: 1rem;
+      margin: 0.5rem;
+  }
+
+  .Supplier-header span,
+  .Supplier-row span {
+      font-size: 14px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+      padding: 0.5rem;
+      font-size: 14px;
+  }
+}
+
 .Supplier-management h2 {
     color: #2d3748;
     margin-bottom: 2rem;

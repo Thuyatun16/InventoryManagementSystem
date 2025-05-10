@@ -116,7 +116,7 @@ const getInventoryAnalytics = async (req, res) => {
     JOIN 
         items i ON sa.barcode = i.barcode
     WHERE 
-        sa.date >= ${dateCondition}
+        sa.date >= ${dateCondition} AND i.is_active = TRUE
     GROUP BY 
         sa.barcode, sa.item_name, i.quantity
 `;
@@ -138,17 +138,7 @@ const getInventoryAnalytics = async (req, res) => {
 
 
         // Get monthly profit trends
-        const monthlyProfitQuery1 = `
-            SELECT 
-                DATE_FORMAT(date, '%Y-%m') as month,
-                SUM(revenue) as totalRevenue,
-                SUM(total_sales * avg_price) as total_cost,
-                SUM(revenue - (total_sales * avg_price)) as total_profit
-            FROM sales_analytics1
-            WHERE date >= ${dateCondition}
-            GROUP BY DATE_FORMAT(date, '%Y-%m')
-            ORDER BY month ASC
-        `;
+        
         const monthlyProfitQuery = `SELECT 
     DATE_FORMAT(oh.order_date, '%Y-%m') AS month,
     SUM(((oh.final_amount / oh.total_amount) * oi.price_at_time - i.price) * oi.quantity) AS total_profit
@@ -217,6 +207,7 @@ const inventoryAlertsQuery = `
         items i
     WHERE 
         i.quantity <= 10
+        AND i.is_active = TRUE
     ORDER BY 
         i.quantity ASC
 `;

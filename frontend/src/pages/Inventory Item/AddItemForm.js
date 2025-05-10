@@ -105,7 +105,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     if (!formData.name || !formData.quantity || !formData.barcode) {
       alert("Please fill all the fields");
@@ -120,7 +120,6 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
       sellPrice: "",
       category_id: "",
     });
-    alert ("Item added successfully");
   };
 
   const toggleItemForm = () => {

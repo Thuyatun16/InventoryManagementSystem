@@ -7,14 +7,28 @@ const createProduct = async (req, res) => {
     if (!name || !quantity || !barcode) {
         return res.status(400).json({ error: 'Required fields missing' });
     }
-
+    
     try {
-        const sql = 'INSERT INTO items (name, quantity, barcode, price, sellPrice, category_id) VALUES (?, ?, ?, ?, ?, ?)';
-        db.query(sql, [name, quantity, barcode, price, sellPrice, category_id], (err, result) => {
-            if (err) {
+        // First check if barcode already exists
+        const checkBarcode = 'SELECT * FROM items WHERE barcode = ?';
+        db.query(checkBarcode, [barcode], (checkErr, checkResult) => {
+            if (checkErr) {
                 return res.status(500).json({ error: 'Database error' });
             }
-            res.status(201).json({ message: 'Item created successfully', itemId: result.insertId });
+
+            // If barcode exists, return error
+            if (checkResult.length > 0) {
+                return res.status(400).json({ error: 'An item with this barcode already exists' });
+            }
+
+            // If barcode doesn't exist, proceed with insertion
+            const sql = 'INSERT INTO items (name, quantity, barcode, price, sellPrice, category_id) VALUES (?, ?, ?, ?, ?, ?)';
+            db.query(sql, [name, quantity, barcode, price, sellPrice, category_id], (err, result) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Database error' });
+                }
+                res.status(201).json({ message: 'Item created successfully', itemId: result.insertId });
+            });
         });
     } catch (error) {
         res.status(500).json({ error: "Server error" });
@@ -34,6 +48,7 @@ const getAllProducts = async (req, res) => {
             SELECT i.*, c.name as category_name 
             FROM items i 
             LEFT JOIN categories c ON i.category_id = c.id
+            WHERE i.is_active = TRUE
         `;
 
         db.query(query, (err, items) => {
@@ -85,26 +100,26 @@ const deleteProduct = async (req, res) => {
     }
     try {
         // Check for both purchase orders and order history
-        const checkQuery = `
-            SELECT 
-                (SELECT COUNT(*) FROM purchase_orders WHERE item_id = ?) as purchaseCount,
-                (SELECT COUNT(*) FROM order_items WHERE item_id = ?) as orderCount
-        `;
-        db.query(checkQuery, [id, id], (err, results) => {
-            if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Database operation failed' });
-            }
+        // const checkQuery = `
+        //     SELECT 
+        //         (SELECT COUNT(*) FROM purchase_orders WHERE item_id = ?) as purchaseCount,
+        //         (SELECT COUNT(*) FROM order_items WHERE item_id = ?) as orderCount
+        // `;
+        // db.query(checkQuery, [id, id], (err, results) => {
+        //     if (err) {
+        //         console.error('Database error:', err);
+        //         return res.status(500).json({ error: 'Database operation failed' });
+        //     }
 
-            if (results[0].purchaseCount > 0 || results[0].orderCount > 0) {
-                return res.status(400).json({
-                    error: 'Cannot delete item',
-                    message: 'This item has associated orders or purchase orders. Cannot delete items with order history.'
-                });
-            }
+        //     if (results[0].purchaseCount > 0 || results[0].orderCount > 0) {
+        //         return res.status(400).json({
+        //             error: 'Cannot delete item',
+        //             message: 'This item has associated orders or purchase orders. Cannot delete items with order history.'
+        //         });
+        //     }
 
             // If no purchase orders exist, proceed with deletion
-            const deleteQuery = 'DELETE FROM items WHERE id = ?';
+            const deleteQuery = 'UPDATE items SET is_active = FALSE WHERE id = ?';
             db.query(deleteQuery, [id], (err, result) => {
                 if (err) {
                     console.error('Database error:', err);
@@ -115,7 +130,7 @@ const deleteProduct = async (req, res) => {
                 }
                 res.status(200).json({ message: 'Item deleted successfully' });
             });
-        });
+        
     } catch (error) {
         console.error('Server error:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -126,7 +141,7 @@ const deleteProduct = async (req, res) => {
 const getProductByBarcode = async (req, res) => {
     const barcode = req.params.barcode;
     try {
-        const query = 'SELECT * FROM items WHERE barcode = ?';
+        const query = 'SELECT * FROM items WHERE barcode = ? AND is_active = TRUE';
         db.query(query, [barcode], (err, results) => {
             if (err) {
                 return res.status(500).json({ message: 'Database error' });
