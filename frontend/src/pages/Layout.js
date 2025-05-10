@@ -17,6 +17,7 @@ import staffIcon from '../Icon/staff.png';
 const Layout = ({ onLogout }) => {
     const [activeLink, setActiveLink] = useState(null);
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const isAdmin = localStorage.getItem('isAdmin')==='true';
     const location = useLocation();
 
@@ -27,11 +28,23 @@ const Layout = ({ onLogout }) => {
 
     const handleLinkClick = (linkName) => {
         setActiveLink(linkName);
+        // Close mobile menu when a link is clicked
+        setIsMobileMenuOpen(false);
     };
 
     return (
         <div className="layout-container">
-            <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+            {/* Mobile menu toggle button */}
+            <button 
+                className="mobile-menu-toggle"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''} ${isMobileMenuOpen ? 'show' : ''}`}>
                 <div className="sidebar-header ">
                     <div className="logo-container">
                         <Link to="/" className="logo">

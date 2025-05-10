@@ -14,7 +14,7 @@ const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategor
   // Handle form submission for adding or editing a category
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+
       if (editingId) {
         // Edit existing category
         const response = await axios.put(
@@ -39,17 +39,22 @@ const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategor
             "is-admin": localStorage.getItem("isAdmin"),
           },
         });
-        onCategoryAdded(response.data);
+        if (response.data && response.data.categoryId) {
+          // Create a category object with the received data
+          const newCategory = {
+            id: response.data.categoryId,
+            name: formData.name,
+            description: formData.description
+          };
+          
+        onCategoryAdded(newCategory);
         setSuccess("Category created successfully");
       }
       // Reset form and state
       setFormData({ name: "", description: "" });
       setEditingId(null);
       setTimeout(() => setSuccess(""), 3000);
-    } catch (err) {
-      setError(err.response?.data?.message || "Operation failed");
-      setTimeout(() => setError(""), 3000);
-    }
+    } 
   };
 
   // Populate form for editing

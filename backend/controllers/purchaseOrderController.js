@@ -237,19 +237,20 @@ const sentOrderEmail = async (req, res) => {
     <div class="email-container">
         <!-- Header Section -->
         <div class="header">
-            <img src="https://www.flaticon.com/free-icon/barcode_6215978?term=barcode+scanner&page=1&position=53&origin=search&related_id=6215978" alt="Shop Logo">
+            <img src="https://drive.google.com/file/d/1Wm2g4gNokizWhLNk8Dfgq4ccJIhplNzG/view?usp=sharing" alt="Shop Logo">
             <h2>Purchase Order Details</h2>
         </div>
 
         <!-- Content Section -->
-        <div class="content">
-            <p><strong>Order ID:</strong> ${orderDetails.orderId}</p>
-            <p><strong>Item:</strong> ${orderDetails.item}</p>
-            <p><strong>Quantity:</strong> ${orderDetails.quantity}</p>
-            <p><strong>Expected Delivery Date:</strong> ${orderDetails.expectedDate}</p>
-            <p>Please confirm receipt of this order.</p>
-            <p>Thank you,<br><strong>Shop Owner</strong></p>
-        </div>
+    <div class="content">
+    <p><strong>Order ID:</strong> ${orderDetails.orderId}</p>
+    <p><strong>Item:</strong> ${orderDetails.item}</p>
+    <p><strong>Quantity:</strong> ${orderDetails.quantity}</p>
+    <p><strong>Requested Delivery Date:</strong> ${orderDetails.expectedDate}</p>
+    <p>Please confirm the availability of the item(s) and provide an estimated delivery date if it differs from the one requested.</p>
+    <p>Thank you for your cooperation.<br><strong>Shop Owner</strong></p>
+    </div>
+
 
         <!-- Footer Section -->
         <div class="footer">

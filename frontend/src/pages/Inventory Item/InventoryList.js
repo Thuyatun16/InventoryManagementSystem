@@ -7,7 +7,7 @@ import AddItemForm from './AddItemForm';
 
 const InventoryList = () => {
     const [items, setItems] = useState([]);
-    const [categories, setCategories] = useState([]); // New state for categories
+    const [categories, setCategories] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -121,6 +121,11 @@ const InventoryList = () => {
         }
     };
 
+    // Handle categories update from AddItemForm
+    const handleCategoriesUpdate = (updatedCategories) => {
+        setCategories(updatedCategories);
+    };
+
     if (loading) return (
         <div className='loading-container'>
             <div className='loading-spinner'>
@@ -201,6 +206,7 @@ const InventoryList = () => {
                 formData={formData}
                 setFormData={setFormData}
                 onAddItem={handleAddItem}
+                onCategoriesUpdate={handleCategoriesUpdate}
             />
             <ul>
                 <li className="inventory-item">

@@ -3,29 +3,41 @@ import axios from 'axios';
 import HandleBarcodeScanner from './Inventory Item/HandleBarcodeScanner';
 import './Home.css';
 import 'animate.css';
-
+import { useCart } from '../context/CartContext';
 
 const Home = () => {
     const [sellScan, setSellScan] = useState('');
-    const [cartItems, setCartItems] = useState([]);
-    const [total, setTotal] = useState(null);
     const [customerPhone, setCustomerPhone] = useState('');
-    const [customer, setCustomer] = useState(null);
-    const [pointsEarned, setPointsEarned] = useState(0);
-    const [usePoints, setUsePoints] = useState(false);
-    const [showPointsMessage, setShowPointsMessage] = useState(false);
+    const {
+        cartItems,
+        setCartItems,
+        total,
+        setTotal,
+        customer,
+        setCustomer,
+        usePoints,
+        setUsePoints,
+        pointsEarned,
+        setPointsEarned,
+        showPointsMessage,
+        setShowPointsMessage,
+        calculateTotal
+    } = useCart();
 
     useEffect(() => {
         if (showPointsMessage) {
-            // Reset the page state except for the points message
             setSellScan('');
             setCustomerPhone('');
             setCustomer(null);
             setUsePoints(false);
             setShowPointsMessage(false);
-            
         }
     }, [showPointsMessage]);
+
+    // Add useEffect to auto-calculate total when cart items change
+    useEffect(() => {
+        calculateTotal();
+    }, [cartItems, calculateTotal]);
 
     const handleSellData = async (barcode) => {
         try {
@@ -53,15 +65,6 @@ const Home = () => {
             newItems[index].subtotal = quantity * price;
             return newItems;
         });
-    }
-useEffect(() => {
-calculateTotal();
-},[cartItems]);
-    const calculateTotal = () => {
-        const sum = cartItems.reduce((acc, item) => acc + Number(item.subtotal), 0);
-        console.log(`Total: ${sum}`);
-        setTotal(sum);
-        return sum;
     }
 
     const handlePhoneSubmit = async (e) => {
@@ -249,17 +252,10 @@ calculateTotal();
                         </div>
                         {cartItems.length > 0 && (
                             <div className="cart-actions">
-                                {/* <button onClick={calculateTotal} className="calculate-btn">
-                                    Calculate Total
-                                </button> */}
-                                {total !== null && (
-                                    <>
-                                        <div className="total">Total: ${total}</div>
-                                        <button onClick={handleCheckout} className="checkout-btn">
-                                            Complete Sale
-                                        </button>
-                                    </>
-                                )}
+                                <div className="total">Total: ${total}</div>
+                                <button onClick={handleCheckout} className="checkout-btn">
+                                    Complete Sale
+                                </button>
                             </div>
                         )}
                     </div>
