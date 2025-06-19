@@ -6,10 +6,14 @@ function BarcodeScanner({ onScan}) {
   const { ref } = useZxing({
     onDecodeResult(result) {
       if (result?.getText()) {
-        onScan(result.getText());
-        const audio = new Audio(sound);
-        audio.play();
-       
+        try {
+          const audio = new Audio(sound);
+          audio.play();
+          onScan(result.getText());
+        } catch (error) {
+          console.error("Error playing audio:", error);
+        }
+      
       }
     },
   });

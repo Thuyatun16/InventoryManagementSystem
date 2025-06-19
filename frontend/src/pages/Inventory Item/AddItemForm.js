@@ -34,7 +34,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
       }
     };
     fetchCategories();
-  }, []);
+  }, [onCategoriesUpdate]); // Add onCategoriesUpdate to the dependency array
 
   // Callback to add a new category
   const handleAddCategory = async (newCategory) => {

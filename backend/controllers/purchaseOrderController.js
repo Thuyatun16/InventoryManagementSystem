@@ -237,7 +237,7 @@ const sentOrderEmail = async (req, res) => {
     <div class="email-container">
         <!-- Header Section -->
         <div class="header">
-            <img src="https://drive.google.com/file/d/1Wm2g4gNokizWhLNk8Dfgq4ccJIhplNzG/view?usp=sharing" alt="Shop Logo">
+            <img src="https://i.imgur.com/eJetNTx.png" alt="Shop Logo">
             <h2>Purchase Order Details</h2>
         </div>
 

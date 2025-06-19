@@ -18,11 +18,41 @@ const InventoryList = () => {
     const [isAdmin] = useState(localStorage.getItem('isAdmin') === 'true');
 
     const calculateStats = () => {
+        const validPrices = items
+            .map(item => parseFloat(item.price))
+            .filter(price => !isNaN(price));
+        
+        const totalItems = items.length;
+        const lowStockItems = items.filter(item => item.quantity < 10).length;
+        const outOfStockItems = items.filter(item => item.quantity === 0).length;
+        const averagePrice = validPrices.length > 0
+            ? validPrices.reduce((acc, price) => acc + price, 0) / validPrices.length
+            : 0;
+    
+        // Category-specific averages
+        const categoryAverages = categories.map(category => {
+            const categoryItems = items.filter(item => item.category_id === category.id);
+            const categoryPrices = categoryItems
+                .map(item => parseFloat(item.price))
+                .filter(price => !isNaN(price));
+            const categoryAverage = categoryPrices.length > 0
+                ? categoryPrices.reduce((acc, price) => acc + price, 0) / categoryPrices.length
+                : 0;
+            return { category: category.name, averagePrice: categoryAverage.toFixed(2) };
+        });
+    
+        // Weighted average by quantity
+        const totalValue = items.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
+        const totalQuantity = items.reduce((acc, item) => acc + item.quantity, 0);
+        const weightedAverage = totalQuantity > 0 ? (totalValue / totalQuantity).toFixed(2) : 0;
+    
         return {
-            totalItems: items.length,
-            lowStockItems: items.filter(item => item.quantity < 10).length,
-            outOfStockItems: items.filter(item => item.quantity === 0).length,
-            averagePrice: items.reduce((acc, item) => acc + parseFloat(item.price), 0) / items.length || 0
+            totalItems,
+            lowStockItems,
+            outOfStockItems,
+            averagePrice: averagePrice.toFixed(2),
+            categoryAverages,
+            weightedAverage
         };
     };
 
@@ -167,15 +197,16 @@ const InventoryList = () => {
                     <span className="stat-card-title">Low Stock Items</span>
                     <span className="stat-card-value">{stats.lowStockItems}</span>
                 </div>
-                <div className="stat-card">
+                <div className="stat-card low-stock">
                     <span className="stat-card-title">Out of Stock</span>
                     <span className="stat-card-value">{stats.outOfStockItems}</span>
                 </div>
                 <div className="stat-card total-value">
-                    <span className="stat-card-title">Average Price</span>
-                    <span className="stat-card-value">${stats.averagePrice.toFixed(2)}</span>
+                    <span className="stat-card-title">Weighted Average Price</span>
+                    <span className="stat-card-value">${stats.weightedAverage}</span>
                 </div>
             </div>
+            
             <div className="search-section">
                 <div className="search-bar">
                     <input
@@ -296,7 +327,7 @@ const InventoryList = () => {
                                 <div
                                     className="inventory-item-details"
                                     onClick={() => handleEditItem(item.id)}
-                                    style={item.quantity < 3 ? { color: 'red' } : {}}
+                                    style={item.quantity <= 10 ? { color: 'red' } : {}}
                                 >
                                     <span className="inventory-item-name">{item.name}</span>
                                     <span className="inventory-item-quantity">{item.quantity}</span>

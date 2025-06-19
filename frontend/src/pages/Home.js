@@ -8,6 +8,9 @@ import { useCart } from '../context/CartContext';
 const Home = () => {
     const [sellScan, setSellScan] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
+    const [settings, setSettings] = useState({
+        minimum_points_for_discount: 0
+    });
     const {
         cartItems,
         setCartItems,
@@ -25,6 +28,7 @@ const Home = () => {
     } = useCart();
 
     useEffect(() => {
+        fetchPointSettings();
         if (showPointsMessage) {
             setSellScan('');
             setCustomerPhone('');
@@ -38,17 +42,54 @@ const Home = () => {
     useEffect(() => {
         calculateTotal();
     }, [cartItems, calculateTotal]);
+    const fetchPointSettings = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/point-settings', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'user-id': localStorage.getItem('userId'),
+                    'is-admin': localStorage.getItem('isAdmin')
+                }
+            });
+            console.log(response.data,'This is setting response');
+            setSettings(response.data);
+        } catch (error) {
+            console.error('Error fetching point settings:', error);
+        }
+    }; 
 
     const handleSellData = async (barcode) => {
         try {
             const response = await axios.get(`http://localhost:5000/sell/${barcode}`);
             const item = response.data;
 
-            setCartItems(prev => [...prev, {
-                ...item,
-                sellQuantity: 1,
-                subtotal: Number(item.sellPrice)
-            }]);
+            setCartItems(prev => {
+                // Check if item already exists in cart
+                const existingItemIndex = prev.findIndex(cartItem => cartItem.id === item.id);
+                
+                if (existingItemIndex !== -1) {
+                    // Item exists, create new array with updated quantity
+                    const newItems = [...prev];
+                    const newQuantity = newItems[existingItemIndex].sellQuantity + 1;
+                    
+                    // Make sure we don't exceed available stock
+                    if (newQuantity <= item.quantity) {
+                        newItems[existingItemIndex].sellQuantity = newQuantity;
+                        newItems[existingItemIndex].subtotal = newQuantity * Number(item.sellPrice);
+                    } else {
+                        alert('Cannot add more items than available in stock');
+                    }
+                    return newItems;
+                } else {
+                    // Item doesn't exist, add new item
+                    return [...prev, {
+                        ...item,
+                        sellQuantity: 1,
+                        subtotal: Number(item.sellPrice)
+                    }];
+                }
+            });
+            
             setSellScan('');
         } catch (error) {
             console.error('Error fetching item:', error);
@@ -79,7 +120,6 @@ const Home = () => {
                     'is-admin': localStorage.getItem('isAdmin')
                 }
             });
-            console.log(response.data, 'This is customer data');
             setCustomer(response.data);
             setCustomerPhone('');
         } catch (error) {
@@ -105,16 +145,16 @@ const Home = () => {
                 userId: localStorage.getItem('userId')
             };
             for (const item of cartItems) {
-               const res =  await axios.post('http://localhost:5000/sell', {
+                    const res =  await axios.post('http://localhost:5000/sell', {
                     id: item.id,
                     soldQuantity: item.sellQuantity
                 });
-                alert (res.data.message);
+                console.log (res.data.message);
             }
             
             const response = await axios.post('http://localhost:5000/checkout', orderData);
-            console.log(cartItems, 'This is cart items');
-            console.log(response.data, 'This is response data');
+            // console.log(cartItems, 'This is cart items');
+            // console.log(response.data, 'This is response data');
             if (customer && usePoints && response.data.discount > 0) {
                 discount = response.data.discount;
                 final_amount = total - discount;
@@ -140,7 +180,7 @@ const Home = () => {
            const updateResponse =  await axios.post('http://localhost:5000/update-analytics', {
                 orderId: response.data.orderId
             });
-            console.log(updateResponse.data, 'This is update response data');
+             console.log(updateResponse.data, 'This is update response data');
         } catch (error) {
             console.error('Error during checkout:', error);
             alert(error.response?.data?.message || 'An error occurred during checkout');
@@ -201,7 +241,7 @@ const Home = () => {
                         <div className="customer-info">
                             <p className='customer-name'>Name :{customer.name}</p>
                             <p className = 'available-points'>Points Available: {customer.points}</p>
-                            {customer.points >= 100 && (
+                            {customer.points >= settings.minimum_points_for_discount && (
                                 <label>
                                     <input
                                         type="checkbox"
