@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { getAllCategories, createCategory, updateCategory, deleteCategory } = require('../controllers/categoryController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 // Public route
+router.use(authMiddleware);
 router.get('/categories', getAllCategories);
 
 // Admin routes - require authentication

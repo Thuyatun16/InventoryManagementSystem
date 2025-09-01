@@ -12,7 +12,7 @@ const {
 } = require('../controllers/productController');
 
 const {getInventoryAnalytics,updateAnalytics} = require('../controllers/analyticsController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 // CRUD routes
 router.post('/create', createProduct);
 router.get('/read', getAllProducts);
@@ -28,6 +28,6 @@ router.post('/checkout', processCheckout);
 router.get('/orders/all', getOrders); // Admin route - must come before /:userId
 router.get('/orders/:userId', getOrders); // User specific orders
 // analytic routes
-router.get('/analytics', checkAdmin, getInventoryAnalytics);
+router.get('/analytics', authMiddleware, getInventoryAnalytics);
 router.post('/update-analytics',updateAnalytics);
 module.exports = router; 

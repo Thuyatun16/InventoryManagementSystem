@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const customerController = require('../controllers/customerController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-router.use(checkAdmin);
+router.use(authMiddleware);
 router.get('/customers', customerController.getAllCustomers);
 // Customer endpoints
 router.post('/customers/find-or-create', customerController.findOrCreateCustomer);
@@ -12,13 +12,13 @@ router.post('/customers/:id/points/redeem', customerController.redeemPoints);
 
 // Point settings endpoints (admin only)
 router.get('/point-settings', customerController.getPointSettings);
-router.put('/point-settings', checkAdmin, customerController.updatePointSettings);
+router.put('/point-settings', authMiddleware, customerController.updatePointSettings);
 
 // Add these routes
 
-router.post('/customers', customerController.createCustomer);
-router.put('/customers/:id', checkAdmin, customerController.updateCustomer);
-router.delete('/customers/:id', checkAdmin, customerController.deleteCustomer);
+router.post('/customers', authMiddleware, customerController.createCustomer);
+router.put('/customers/:id', authMiddleware, customerController.updateCustomer);
+router.delete('/customers/:id', authMiddleware, customerController.deleteCustomer);
 
 // Add these routes to your existing customerRoutes.js
 // Allow both admin and staff to access point transactions

@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const supplierController = require('../controllers/supplierController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-router.use(checkAdmin);
+router.use(authMiddleware);
 router.get('/suppliers', supplierController.getAllSuppliers);
 // Supplier endpoints
 
 router.post('/suppliers', supplierController.createSupplier);
-router.put('/suppliers/:id', checkAdmin, supplierController.updateSupplier);
-router.delete('/suppliers/:id', checkAdmin, supplierController.deleteSupplier);
+router.put('/suppliers/:id', supplierController.updateSupplier);
+router.delete('/suppliers/:id', supplierController.deleteSupplier);
 
 module.exports = router; 

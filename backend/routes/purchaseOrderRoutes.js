@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const purchaseOrderController = require('../controllers/purchaseOrderController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // All routes require admin access
-router.use(checkAdmin);
+router.use(authMiddleware);
 
 // Get all purchase orders
 router.get('/purchase-orders', purchaseOrderController.getAllOrders);
