@@ -2,7 +2,7 @@ import React from "react";
 import { useZxing } from "react-zxing";
 import sound from "../../assets/sound.mp3";
 
-function BarcodeScanner({ onScan}) {
+function BarcodeScanner({ onScan }) {
   const { ref } = useZxing({
     onDecodeResult(result) {
       if (result?.getText()) {
@@ -13,7 +13,6 @@ function BarcodeScanner({ onScan}) {
         } catch (error) {
           console.error("Error playing audio:", error);
         }
-      
       }
     },
   });

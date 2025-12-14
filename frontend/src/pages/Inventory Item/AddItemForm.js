@@ -40,7 +40,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
   const handleAddCategory = async (newCategory) => {
     try {
       console.log("New category received:", newCategory);
-      
+
       // Ensure the new category has all required fields
       if (newCategory && newCategory.id && newCategory.name) {
         // Fetch the latest categories list
@@ -51,9 +51,9 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
             "is-admin": localStorage.getItem("isAdmin"),
           },
         });
-        
+
         console.log("Categories response:", response.data);
-        
+
         if (Array.isArray(response.data)) {
           setCategories(response.data);
           // Notify parent component about categories update
@@ -65,12 +65,12 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
           throw new Error("Invalid categories data received from server");
         }
       } else {
-        console.error('Invalid category data received:', newCategory);
+        console.error("Invalid category data received:", newCategory);
         throw new Error("Invalid category data received");
       }
     } catch (error) {
-      console.error('Error in handleAddCategory:', error);
-      console.error('Error response:', error.response);
+      console.error("Error in handleAddCategory:", error);
+      console.error("Error response:", error.response);
     }
   };
 
@@ -78,7 +78,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
   const handleEditCategory = (updatedCategory) => {
     setCategories((prevCategories) => {
       const newCategories = prevCategories.map((cat) =>
-        cat.id === updatedCategory.id ? updatedCategory : cat
+        cat.id === updatedCategory.id ? updatedCategory : cat,
       );
       // Notify parent component about categories update
       if (onCategoriesUpdate) {
@@ -105,7 +105,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.quantity || !formData.barcode) {
       alert("Please fill all the fields");
@@ -148,7 +148,9 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
           <span>+</span> Add Category
         </div>
       </div>
-      <div className={`add-form-container ${isCategoryFormOpen ? "active" : ""}`}>
+      <div
+        className={`add-form-container ${isCategoryFormOpen ? "active" : ""}`}
+      >
         <div className="add-form" key={categories.length}>
           <CategoryForm
             categories={categories}

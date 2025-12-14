@@ -13,10 +13,13 @@ router.get('/purchase-orders', purchaseOrderController.getAllOrders);
 router.post('/purchase-orders', purchaseOrderController.createOrder);
 
 // Mark order as received
-router.put('/purchase-orders/:id/receive', purchaseOrderController.receiveOrder);
+router.put(
+  '/purchase-orders/:id/receive',
+  purchaseOrderController.receiveOrder,
+);
 
 // Delete purchase order (optional)
 router.delete('/purchase-orders/:id', purchaseOrderController.deleteOrder);
-router.post('/send-order-email',purchaseOrderController.sentOrderEmail);
+router.post('/send-order-email', purchaseOrderController.sentOrderEmail);
 
-module.exports = router; 
+module.exports = router;

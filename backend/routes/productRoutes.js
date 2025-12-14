@@ -1,17 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const {
-    createProduct,
-    getAllProducts,
-    updateProduct,
-    deleteProduct,
-    getProductByBarcode,
-    processSale,
-    processCheckout,
-    getOrders
+  createProduct,
+  getAllProducts,
+  updateProduct,
+  deleteProduct,
+  getProductByBarcode,
+  processSale,
+  processCheckout,
+  getOrders,
 } = require('../controllers/productController');
 
-const {getInventoryAnalytics,updateAnalytics} = require('../controllers/analyticsController');
+const {
+  getInventoryAnalytics,
+  updateAnalytics,
+} = require('../controllers/analyticsController');
 const authMiddleware = require('../middlewares/authMiddleware');
 // CRUD routes
 router.post('/create', createProduct);
@@ -29,5 +32,5 @@ router.get('/orders/all', getOrders); // Admin route - must come before /:userId
 router.get('/orders/:userId', getOrders); // User specific orders
 // analytic routes
 router.get('/analytics', authMiddleware, getInventoryAnalytics);
-router.post('/update-analytics',updateAnalytics);
-module.exports = router; 
+router.post('/update-analytics', updateAnalytics);
+module.exports = router;

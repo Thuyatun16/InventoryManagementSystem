@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./CategoryForm.css";
 
-const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategoryDeleted }) => {
+const CategoryForm = ({
+  categories,
+  onCategoryAdded,
+  onCategoryEdited,
+  onCategoryDeleted,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -15,38 +20,42 @@ const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategor
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      if (editingId) {
-        // Edit existing category
-        const response = await axios.put(
-          `http://localhost:5000/categories/${editingId}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "user-id": localStorage.getItem("userId"),
-              "is-admin": localStorage.getItem("isAdmin"),
-            },
-          }
-        );
-        onCategoryEdited(response.data);
-        setSuccess("Category updated successfully");
-      } else {
-        // Add new category
-        const response = await axios.post("http://localhost:5000/categories", formData, {
+    if (editingId) {
+      // Edit existing category
+      const response = await axios.put(
+        `http://localhost:5000/categories/${editingId}`,
+        formData,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "user-id": localStorage.getItem("userId"),
             "is-admin": localStorage.getItem("isAdmin"),
           },
-        });
-        if (response.data && response.data.categoryId) {
-          // Create a category object with the received data
-          const newCategory = {
-            id: response.data.categoryId,
-            name: formData.name,
-            description: formData.description
-          };
-          
+        },
+      );
+      onCategoryEdited(response.data);
+      setSuccess("Category updated successfully");
+    } else {
+      // Add new category
+      const response = await axios.post(
+        "http://localhost:5000/categories",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "user-id": localStorage.getItem("userId"),
+            "is-admin": localStorage.getItem("isAdmin"),
+          },
+        },
+      );
+      if (response.data && response.data.categoryId) {
+        // Create a category object with the received data
+        const newCategory = {
+          id: response.data.categoryId,
+          name: formData.name,
+          description: formData.description,
+        };
+
         onCategoryAdded(newCategory);
         setSuccess("Category created successfully");
       }
@@ -54,7 +63,7 @@ const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategor
       setFormData({ name: "", description: "" });
       setEditingId(null);
       setTimeout(() => setSuccess(""), 3000);
-    } 
+    }
   };
 
   // Populate form for editing
@@ -136,12 +145,20 @@ const CategoryForm = ({ categories, onCategoryAdded, onCategoryEdited, onCategor
             <div key={category.id} className="category-card">
               <h4>{category.name.trim()}</h4>
               <p>{category.description || "No description"}</p>
-              <small>Created: {new Date(category.created_at).toLocaleDateString()}</small>
+              <small>
+                Created: {new Date(category.created_at).toLocaleDateString()}
+              </small>
               <div className="category-actions">
-                <button onClick={() => handleEdit(category)} className="edit-btn">
+                <button
+                  onClick={() => handleEdit(category)}
+                  className="edit-btn"
+                >
                   Edit
                 </button>
-                <button onClick={() => handleDelete(category.id)} className="delete-btn">
+                <button
+                  onClick={() => handleDelete(category.id)}
+                  className="delete-btn"
+                >
                   Delete
                 </button>
               </div>

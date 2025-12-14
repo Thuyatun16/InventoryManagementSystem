@@ -47,7 +47,7 @@
 
 .add-form input:focus {
   outline: none;
-  border-color:  #4f46e5 !important;
+  border-color: #4f46e5 !important;
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
   background-color: white;
 }
@@ -88,7 +88,6 @@
 }
 
 /* Loading state */
-
 
 /* Input validation styles */
 .add-form input:invalid {
@@ -141,9 +140,15 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Make submit button distinct from scan button */
@@ -163,8 +168,7 @@
 .add-form-container.active {
   max-height: 800px;
   transition: max-height 0.3s ease-in;
-  overflow-y: auto
-  
+  overflow-y: auto;
 }
 
 .buttons-container {
@@ -195,7 +199,6 @@
 
 /* Remove hover-based opening */
 
-
 .add-form-trigger span {
   display: inline-block;
   transition: transform 0.3s ease;
@@ -212,7 +215,7 @@
   position: relative;
 }
 .input-with-icon img {
-position: relative;
+  position: relative;
   width: 20px;
   height: 20px;
   margin-right: 10px;
@@ -225,6 +228,6 @@ position: relative;
 .barcode-icon {
   position: absolute;
   right: 10px;
-  cursor : pointer;
+  cursor: pointer;
   font-size: 18px;
 }

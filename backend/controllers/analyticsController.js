@@ -47,41 +47,41 @@ const { db } = require('../config/db');
 // });
 
 const getInventoryAnalytics = async (req, res) => {
-    try {
-        //console.log('fetching analytics -----------');
-        // Check if user is admin
-        // if (!req.user?.isAdmin) {
-        //     return res.status(403).json({ message: 'Admin access required' });
-        // }
+  try {
+    //console.log('fetching analytics -----------');
+    // Check if user is admin
+    // if (!req.user?.isAdmin) {
+    //     return res.status(403).json({ message: 'Admin access required' });
+    // }
 
-        const timeRange = req.query.timeRange || 'month'; // Default to 'month'
+    const timeRange = req.query.timeRange || 'month'; // Default to 'month'
 
-        // Define date range based on timeRange
-        let dateCondition = '';
-        switch (timeRange) {
-            case 'week':
-                dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)';
-                break;
-            case 'month':
-                dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)';
-                break;
-            case 'year':
-                dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 YEAR)';
-                break;
-            default:
-                dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)';
-        }
-        //TOtal order
-        const [totalOrdersResult] = await db.promise().query(`
+    // Define date range based on timeRange
+    let dateCondition = '';
+    switch (timeRange) {
+      case 'week':
+        dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)';
+        break;
+      case 'month':
+        dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)';
+        break;
+      case 'year':
+        dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 YEAR)';
+        break;
+      default:
+        dateCondition = 'DATE_SUB(CURRENT_DATE, INTERVAL 1 MONTH)';
+    }
+    //TOtal order
+    const [totalOrdersResult] = await db.promise().query(`
             SELECT COUNT(order_id) as totalOrders
             FROM order_history
             WHERE order_date >= ${dateCondition}
         `);
 
-        const totalOrders = totalOrdersResult[0].totalOrders || 0;
-        //console.log(totalOrders, 'totalOrders');
-        // Get revenue growth
-        const [currentPeriodRevenue] = await db.promise().query(`
+    const totalOrders = totalOrdersResult[0].totalOrders || 0;
+    //console.log(totalOrders, 'totalOrders');
+    // Get revenue growth
+    const [currentPeriodRevenue] = await db.promise().query(`
             SELECT
                 SUM(revenue) as totalRevenue
             FROM
@@ -89,7 +89,7 @@ const getInventoryAnalytics = async (req, res) => {
             WHERE
                 date >= ${dateCondition}
         `);
-        const [previousPeriodRevenue] = await db.promise().query(`
+    const [previousPeriodRevenue] = await db.promise().query(`
             SELECT
                 SUM(revenue) as totalRevenue
             FROM
@@ -98,14 +98,16 @@ const getInventoryAnalytics = async (req, res) => {
                 date >= DATE_SUB(CURRENT_DATE, INTERVAL 2 ${timeRange.toUpperCase()})
                 AND date < DATE_SUB(CURRENT_DATE, INTERVAL 1 ${timeRange.toUpperCase()})    
         `);
-        const currentRevenue = currentPeriodRevenue[0].totalRevenue || 0;
-        const previousRevenue = previousPeriodRevenue[0].totalRevenue || 0;
-        //console.log(currentPeriodRevenue[0],'This is current period revenue');//testing
-        const growth = previousRevenue > 0 ?
-            ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
-        const revenueGrowth = Math.round(growth);
-        // Get product analytics
-        const productQuery = `
+    const currentRevenue = currentPeriodRevenue[0].totalRevenue || 0;
+    const previousRevenue = previousPeriodRevenue[0].totalRevenue || 0;
+    //console.log(currentPeriodRevenue[0],'This is current period revenue');//testing
+    const growth =
+      previousRevenue > 0
+        ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
+        : 0;
+    const revenueGrowth = Math.round(growth);
+    // Get product analytics
+    const productQuery = `
     SELECT 
         sa.barcode,
         sa.item_name,
@@ -120,26 +122,27 @@ const getInventoryAnalytics = async (req, res) => {
     GROUP BY 
         sa.barcode, sa.item_name, i.quantity
 `;
-        //orderGrowth
-        const [currentPeriodOrders] = await db.promise().query(`
+    //orderGrowth
+    const [currentPeriodOrders] = await db.promise().query(`
          SELECT COUNT(order_id) as total_orders
         FROM order_history
         WHERE order_date >= ${dateCondition}`);
-        const [previousPeriodOrders] = await db.promise().query(`
+    const [previousPeriodOrders] = await db.promise().query(`
       SELECT COUNT(order_id) as total_orders
       FROM order_history
      WHERE order_date >= DATE_SUB(CURRENT_DATE, INTERVAL 2 ${timeRange.toUpperCase()})
      AND order_date < DATE_SUB(CURRENT_DATE, INTERVAL 1 ${timeRange.toUpperCase()})`);
-        const currentOrders = currentPeriodOrders[0].total_orders || 0;
-        const previousOrders = previousPeriodOrders[0].total_orders || 0;
-        const orderGrowth = previousOrders > 0 ?Math.round(
-            ((currentOrders - previousOrders) / previousOrders)) * 100 : 0;
-        //console.log(orderGrowth, 'orderGrowth');
+    const currentOrders = currentPeriodOrders[0].total_orders || 0;
+    const previousOrders = previousPeriodOrders[0].total_orders || 0;
+    const orderGrowth =
+      previousOrders > 0
+        ? Math.round((currentOrders - previousOrders) / previousOrders) * 100
+        : 0;
+    //console.log(orderGrowth, 'orderGrowth');
 
+    // Get monthly profit trends
 
-        // Get monthly profit trends
-        
-        const monthlyProfitQuery = `SELECT 
+    const monthlyProfitQuery = `SELECT 
     DATE_FORMAT(oh.order_date, '%Y-%m') AS month,
     SUM(((oh.final_amount / oh.total_amount) * oi.price_at_time - i.price) * oi.quantity) AS total_profit
 FROM 
@@ -152,9 +155,9 @@ WHERE
     oh.order_date >= ${dateCondition}
 GROUP BY 
     DATE_FORMAT(oh.order_date, '%Y-%m')`;
-           
-        // Get top products
-        const topProductsQuery = `
+
+    // Get top products
+    const topProductsQuery = `
             SELECT 
                 item_name,
                 SUM(total_sales) as sales
@@ -165,8 +168,8 @@ GROUP BY
             LIMIT 5
         `;
 
-        // Get sales summary
-        const salesSummaryQuery = `
+    // Get sales summary
+    const salesSummaryQuery = `
             SELECT 
                 SUM(revenue) as totalRevenue,
                 COUNT(DISTINCT barcode) as activeProducts
@@ -174,8 +177,8 @@ GROUP BY
             WHERE date >= ${dateCondition}
         `;
 
-        // Get recent orders
-        const recentOrdersQuery = `
+    // Get recent orders
+    const recentOrdersQuery = `
             SELECT 
                 oh.order_id,
                 oh.order_date,
@@ -188,9 +191,9 @@ GROUP BY
             LIMIT 5
         `;
 
-        // Get inventory alerts
-        // Get inventory alerts
-const inventoryAlertsQuery = `
+    // Get inventory alerts
+    // Get inventory alerts
+    const inventoryAlertsQuery = `
     SELECT 
         i.id,
         i.name AS product_name,
@@ -212,57 +215,64 @@ const inventoryAlertsQuery = `
         i.quantity ASC
 `;
 
-        // Execute all queries
-        const [productResults] = await db.promise().query(productQuery);
-        const [profitResults] = await db.promise().query(monthlyProfitQuery);
-        const [topProductsResults] = await db.promise().query(topProductsQuery);
-        const [salesSummaryResults] = await db.promise().query(salesSummaryQuery);
-        const [recentOrdersResults] = await db.promise().query(recentOrdersQuery);
-        const [inventoryAlertsResults] = await db.promise().query(inventoryAlertsQuery);
-        console.log(productResults, 'Product results');
-        res.json({
-            productAnalytics: productResults,
-            monthlyProfits: profitResults,
-            topProducts: topProductsResults,
-            salesSummary: {
-                totalRevenue: salesSummaryResults[0].totalRevenue,
-                activeProducts: salesSummaryResults[0].activeProducts,
-                revenueGrowth: revenueGrowth,
-                orderGrowth: orderGrowth,
-                totalOrders: totalOrders,
-                averageOrderValue: totalOrders > 0 ? Math.round(salesSummaryResults[0].totalRevenue / totalOrders) : 0
-            }, // Single object
-            recentOrders: recentOrdersResults,
-            inventoryAlerts: inventoryAlertsResults,
-
-
-        });
-    } catch (error) {
-        console.error('Analytics error:', error);
-        res.status(500).json({ message: 'Error fetching analytics', error: error.message });
-    }
+    // Execute all queries
+    const [productResults] = await db.promise().query(productQuery);
+    const [profitResults] = await db.promise().query(monthlyProfitQuery);
+    const [topProductsResults] = await db.promise().query(topProductsQuery);
+    const [salesSummaryResults] = await db.promise().query(salesSummaryQuery);
+    const [recentOrdersResults] = await db.promise().query(recentOrdersQuery);
+    const [inventoryAlertsResults] = await db
+      .promise()
+      .query(inventoryAlertsQuery);
+    console.log(productResults, 'Product results');
+    res.json({
+      productAnalytics: productResults,
+      monthlyProfits: profitResults,
+      topProducts: topProductsResults,
+      salesSummary: {
+        totalRevenue: salesSummaryResults[0].totalRevenue,
+        activeProducts: salesSummaryResults[0].activeProducts,
+        revenueGrowth: revenueGrowth,
+        orderGrowth: orderGrowth,
+        totalOrders: totalOrders,
+        averageOrderValue:
+          totalOrders > 0
+            ? Math.round(salesSummaryResults[0].totalRevenue / totalOrders)
+            : 0,
+      }, // Single object
+      recentOrders: recentOrdersResults,
+      inventoryAlerts: inventoryAlertsResults,
+    });
+  } catch (error) {
+    console.error('Analytics error:', error);
+    res
+      .status(500)
+      .json({ message: 'Error fetching analytics', error: error.message });
+  }
 };
 //updateAnalytics table
 const updateAnalytics = async (req, res) => {
-    try {
-        const { orderId } = req.body;
-        const orderDetails = await db.promise().query(`
+  try {
+    const { orderId } = req.body;
+    const orderDetails = await db.promise().query(
+      `
             SELECT oi.item_id, oi.quantity, oi.subtotal, i.name, i.barcode
             FROM order_items oi
             JOIN items i ON oi.item_id = i.id
             WHERE oi.order_id = ?
-        `, [orderId]);
-        //console.log(orderDetails[0], 'orderDetails');//testing
+        `,
+      [orderId],
+    );
+    //console.log(orderDetails[0], 'orderDetails');//testing
 
-        for (const item of orderDetails[0]) {
-            // First, get the current stock level
-            const [stockResult] = await db.promise().query(
-                'SELECT quantity FROM items WHERE id = ?',
-                [item.item_id]
-            );
-            const currentStock = stockResult[0]?.quantity || 0;
+    for (const item of orderDetails[0]) {
+      // First, get the current stock level
+      const [stockResult] = await db
+        .promise()
+        .query('SELECT quantity FROM items WHERE id = ?', [item.item_id]);
+      const currentStock = stockResult[0]?.quantity || 0;
 
-            const query = `
+      const query = `
                 INSERT INTO sales_analytics (
                     date,
                     barcode,
@@ -287,25 +297,32 @@ const updateAnalytics = async (req, res) => {
                     avg_price = (avg_price + VALUES(avg_price)) / 2,
                     stock_level = ?;  /* Using the same stock level for update */
             `;
-               
-            await db.promise().query(query, [
-                item.barcode,
-                item.name,
-                item.quantity,
-                item.subtotal,
-                item.subtotal / item.quantity,
-                currentStock,  // For INSERT
-                currentStock   // For UPDATE
-            ]);
-        }
-       
-        res.status(200).json({ message: 'Analytics updated successfully', orderDetails: orderDetails[0] });
+
+      await db.promise().query(query, [
+        item.barcode,
+        item.name,
+        item.quantity,
+        item.subtotal,
+        item.subtotal / item.quantity,
+        currentStock, // For INSERT
+        currentStock, // For UPDATE
+      ]);
     }
-    catch (error) {
-        console.error('Error updating analytics:', error);
-        res.status(500).json({ message: 'Error updating analytics', error: error.message });
-    }
+
+    res
+      .status(200)
+      .json({
+        message: 'Analytics updated successfully',
+        orderDetails: orderDetails[0],
+      });
+  } catch (error) {
+    console.error('Error updating analytics:', error);
+    res
+      .status(500)
+      .json({ message: 'Error updating analytics', error: error.message });
+  }
 };
 module.exports = {
-    getInventoryAnalytics, updateAnalytics
+  getInventoryAnalytics,
+  updateAnalytics,
 };
