@@ -1,20 +1,20 @@
-import "./index.css";
+import "../styles/index.css";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import OrderHistory from "./pages/OrderHistory";
-import Home from "./pages/Home";
-import Nopage from "./pages/Nopage";
-import Layout from "./pages/Layout";
-import Login from "./pages/Login";
-import InventoryList from "./pages/Inventory Item/InventoryList";
-import Register from "./pages/Register";
-import AdminDashboard from "./pages/AdminDashboard";
-import PurchaseOrders from "./pages/PurchaseOrders";
-import CustomerPoints from "./pages/CustomerPoints";
-import CustomerManagement from "./pages/CustomerManagement";
-import SupplierManagement from "./pages/SupplierManagement";
-import AddStaff from "./pages/AddStaff";
-import { CartProvider } from "./context/CartContext";
+import OrderHistory from "../features/orders/pages/OrderHistory";
+import Home from "../features/home/pages/Home";
+import Nopage from "../pages/Nopage";
+import Layout from "../layouts/Layout";
+import Login from "../features/auth/pages/Login";
+import InventoryList from "../features/inventory/pages/InventoryList";
+import Register from "../features/auth/pages/Register";
+import AdminDashboard from "../features/dashboard/pages/AdminDashboard";
+import PurchaseOrders from "../features/orders/pages/PurchaseOrders";
+import CustomerPoints from "../features/customers/pages/CustomerPoints";
+import CustomerManagement from "../features/customers/pages/CustomerManagement";
+import SupplierManagement from "../features/suppliers/pages/SupplierManagement";
+import AddStaff from "../features/staff/pages/AddStaff";
+import { CartProvider } from "../context/CartContext";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

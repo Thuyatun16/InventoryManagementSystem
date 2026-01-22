@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import BarcodeScanner from "./BarcodeScanner";
-import scannerIcon from "../../Icon/barcode-scan.png";
+import scannerIcon from "../../../assets/icons/barcode-scan.png";
 
 function HandleBarcodeScanner({
   formData,

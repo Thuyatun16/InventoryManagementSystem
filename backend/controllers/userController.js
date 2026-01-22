@@ -96,11 +96,12 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, email, phone_number, password } = req.body;
-
+  const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+ 
   try {
     db.query(
       'UPDATE user_table SET username = ?, email = ?,phone_number=?, password =? WHERE id = ? AND isAdmin = 0',
-      [username, email, phone_number, password, id],
+      [username, email, phone_number, hashedPassword, id],
       (err, result) => {
         if (err) {
           return res.status(500).json({ error: 'Update failed' });

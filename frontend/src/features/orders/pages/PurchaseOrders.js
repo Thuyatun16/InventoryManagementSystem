@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./PurchaseOrders.css";
-import loadingIcon from "../Icon/loading.png";
+import "../styles/PurchaseOrders.css";
+import loadingIcon from "../../../assets/icons/loading.png";
 
 const PurchaseOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -9,6 +10,13 @@ const PurchaseOrders = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [emailStatus, setEmailStatus] = useState("");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const authHeaders = {
+    Authorization: `Bearer ${token}`,
+    "user-id": localStorage.getItem("userId"),
+    "is-admin": localStorage.getItem("isAdmin"),
+  };
   const [newOrder, setNewOrder] = useState({
     item_id: "",
     quantity: "",
@@ -17,32 +25,45 @@ const PurchaseOrders = () => {
   });
 
   useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      navigate("/");
+      return;
+    }
     fetchPurchaseOrders();
     fetchInventoryItems();
     fetchSupplier();
-  }, []);
+  }, [navigate, token]);
 
   // Existing fetch functions remain the same
   const fetchInventoryItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/read");
+      const response = await axios.get("http://localhost:5000/read", {
+        headers: authHeaders,
+      });
       // Sort items by quantity (lowest first)
       const sortedItems = response.data.sort((a, b) => a.quantity - b.quantity);
       setInventoryItems(sortedItems);
     } catch (error) {
       console.error("Error fetching inventory items:", error);
+      if (error.response?.status === 401) {
+        navigate("/");
+      }
     }
   };
 
   const fetchSupplier = async () => {
-    const response = await axios.get("http://localhost:5000/suppliers", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-        "user-id": localStorage.getItem("userId"),
-        "is-admin": localStorage.getItem("isAdmin"),
-      },
-    });
-    setSupplier(response.data);
+    try {
+      const response = await axios.get("http://localhost:5000/suppliers", {
+        headers: authHeaders,
+      });
+      setSupplier(response.data);
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
+      if (error.response?.status === 401) {
+        navigate("/");
+      }
+    }
   };
 
   const fetchPurchaseOrders = async () => {
@@ -50,17 +71,16 @@ const PurchaseOrders = () => {
       const response = await axios.get(
         "http://localhost:5000/purchase-orders",
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
-          },
+          headers: authHeaders,
         },
       );
       setOrders(response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching purchase orders:", error);
+      if (error.response?.status === 401) {
+        navigate("/");
+      }
       setLoading(false);
     }
   };
@@ -97,11 +117,7 @@ const PurchaseOrders = () => {
         "http://localhost:5000/purchase-orders",
         newOrder,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
-          },
+          headers: authHeaders,
         },
       );
 
@@ -120,11 +136,7 @@ const PurchaseOrders = () => {
 
       // Send the email
       await axios.post("http://localhost:5000/send-order-email", emailData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-          "user-id": localStorage.getItem("userId"),
-          "is-admin": localStorage.getItem("isAdmin"),
-        },
+        headers: authHeaders,
       });
 
       setEmailStatus("Order created and email sent to supplier successfully!");
@@ -151,11 +163,7 @@ const PurchaseOrders = () => {
         `http://localhost:5000/purchase-orders/${orderId}/receive`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
-          },
+          headers: authHeaders,
         },
       );
       fetchPurchaseOrders();

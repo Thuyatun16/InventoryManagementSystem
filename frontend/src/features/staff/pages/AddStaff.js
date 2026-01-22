@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import "./AddStaff.css";
+import "../styles/AddStaff.css";
 import Axios from "axios";
-import LoadingIcon from "../Icon/loading.png";
-import EditIcon from "../Icon/edit.png";
-import DeleteIcon from "../Icon/delete.png";
-import AddIcon from "../Icon/add-staff.png"; // Assume you have an add icon
+import LoadingIcon from "../../../assets/icons/loading.png";
+import EditIcon from "../../../assets/icons/edit.png";
+import DeleteIcon from "../../../assets/icons/delete.png";
+import AddIcon from "../../../assets/icons/add-staff.png"; // Assume you have an add icon
 
 const AddStaff = () => {
   const [user, setUser] = useState("");

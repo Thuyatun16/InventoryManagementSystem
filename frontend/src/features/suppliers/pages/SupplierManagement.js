@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./SupplierManagement.css";
-import loadingIcon from "../Icon/loading.png";
-import editIcon from "../Icon/edit.png";
-import deleteIcon from "../Icon/delete.png";
+import "../styles/SupplierManagement.css";
+import loadingIcon from "../../../assets/icons/loading.png";
+import editIcon from "../../../assets/icons/edit.png";
+import deleteIcon from "../../../assets/icons/delete.png";
 
 const SupplierManagement = () => {
   const [suppliers, setSupplier] = useState([]);

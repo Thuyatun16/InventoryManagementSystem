@@ -1,7 +1,7 @@
 /*************  ✨ Codeium Command 🌟  *************/
 import { useState } from "react";
 
-import "./login.css";
+import "../styles/login.css";
 import Axios from "axios";
 import "animate.css";
 

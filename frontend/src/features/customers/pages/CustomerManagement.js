@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import "./AddStaff.css"; // Reuse the same CSS
+import "../../staff/styles/AddStaff.css"; // Reuse the same CSS
 import Axios from "axios";
-import LoadingIcon from "../Icon/loading.png";
-import EditIcon from "../Icon/edit.png";
-import DeleteIcon from "../Icon/delete.png";
-import AddIcon from "../Icon/add-staff.png";
-import "./CustomerManagement.css";
+import LoadingIcon from "../../../assets/icons/loading.png";
+import EditIcon from "../../../assets/icons/edit.png";
+import DeleteIcon from "../../../assets/icons/delete.png";
+import AddIcon from "../../../assets/icons/add-staff.png";
+import "../styles/CustomerManagement.css";
 
 const CustomerManagement = () => {
   const [name, setName] = useState("");

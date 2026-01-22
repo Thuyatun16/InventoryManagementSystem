@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import HandleBarcodeScanner from "./Inventory Item/HandleBarcodeScanner";
-import "./Home.css";
+import HandleBarcodeScanner from "../../inventory/pages/HandleBarcodeScanner";
+import "../styles/Home.css";
 import "animate.css";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../../../context/CartContext";
 
 const Home = () => {
   const [sellScan, setSellScan] = useState("");

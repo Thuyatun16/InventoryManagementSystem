@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CategoryForm from "./CategoryForm";
-import "./AddItemForm.css";
+import "../styles/AddItemForm.css";
 import HandleBarcodeScanner from "./HandleBarcodeScanner";
 
 function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {

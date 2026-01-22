@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import loadingIcon from "../Icon/loading.png";
+import loadingIcon from "../../../assets/icons/loading.png";
 import {
   XAxis,
   YAxis,
@@ -17,7 +17,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
-import "./AdminDashboard.css";
+import "../styles/AdminDashboard.css";
 
 const AdminDashboard = () => {
   const [analytics, setAnalytics] = useState({

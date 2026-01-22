@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./OrderHistory.css";
-import loadingIcon from "../Icon/loading.png";
+import "../styles/OrderHistory.css";
+import loadingIcon from "../../../assets/icons/loading.png";
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import "./login.css";
+import "../styles/login.css";
 import Axios from "axios";
 
 const Register = ({ onLoginSuccess }) => {
@@ -9,29 +9,47 @@ const Register = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const register = (e) => {
+  const register = async (e) => {
     e.preventDefault();
-    if (password === confirmPassword) {
-      console.log(user, email, password);
-      Axios.post("http://localhost:5000/register", {
+    if (password !== confirmPassword) {
+      alert("Password and confirm password does not match");
+      return;
+    }
+
+    try {
+      await Axios.post("http://localhost:5000/register", {
         username: user,
         email: email,
         password: password,
-      })
-        .then((response) => {
-          console.log(response.data);
-          onLoginSuccess();
-        })
-        .catch((error) => {
-          if (error.status === 409) {
-            alert(error.response.data.error);
-          }
-          if (error.status === 400) {
-            alert(error.response.data.error);
-          }
-        });
-    } else {
-      alert("Password and confirm password does not match");
+      });
+
+      const loginResponse = await Axios.post("http://localhost:5000/login", {
+        email: email,
+        password: password,
+      });
+
+      if (loginResponse.data?.message === "Login successful!") {
+        localStorage.setItem("userId", loginResponse.data.userId);
+        localStorage.setItem(
+          "isAdmin",
+          loginResponse.data.isAdmin.toString(),
+        );
+        localStorage.setItem("token", loginResponse.data.token);
+        onLoginSuccess();
+        return;
+      }
+
+      alert(loginResponse.data?.message || "Login failed after registration");
+    } catch (error) {
+      if (error.response?.status === 409) {
+        alert(error.response.data.error);
+        return;
+      }
+      if (error.response?.status === 400) {
+        alert(error.response.data.error);
+        return;
+      }
+      alert("Registration failed");
     }
   };
 

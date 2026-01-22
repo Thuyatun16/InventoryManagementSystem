@@ -1,17 +1,17 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./Layout.css";
-import logoIcon from "../Icon/Logo.png";
-import homeIcon from "../Icon/home.png";
-import dashboardIcon from "../Icon/dashboard.png";
-import orderIcon from "../Icon/history.png";
-import inventoryIcon from "../Icon/inventory.png";
-import pointsIcon from "../Icon/points.png";
-import customerIcon from "../Icon/customer (1).png";
-import supplierIcon from "../Icon/delivery.png";
-import logoutIcon from "../Icon/logout.png";
-import purchaseIcon from "../Icon/checklist.png";
-import staffIcon from "../Icon/staff.png";
+import logoIcon from "../assets/icons/Logo.png";
+import homeIcon from "../assets/icons/home.png";
+import dashboardIcon from "../assets/icons/dashboard.png";
+import orderIcon from "../assets/icons/history.png";
+import inventoryIcon from "../assets/icons/inventory.png";
+import pointsIcon from "../assets/icons/points.png";
+import customerIcon from "../assets/icons/customer (1).png";
+import supplierIcon from "../assets/icons/delivery.png";
+import logoutIcon from "../assets/icons/logout.png";
+import purchaseIcon from "../assets/icons/checklist.png";
+import staffIcon from "../assets/icons/staff.png";
 
 const Layout = ({ onLogout }) => {
   const [activeLink, setActiveLink] = useState(null);

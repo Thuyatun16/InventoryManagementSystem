@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./InventoryList.css";
+import "../styles/InventoryList.css";
 import axios from "axios";
-import loadingIcon from "../../Icon/loading.png";
-import saveIcon from "../../Icon/saveIcon.png";
+import loadingIcon from "../../../assets/icons/loading.png";
+import saveIcon from "../../../assets/icons/saveIcon.png";
 import AddItemForm from "./AddItemForm";
 
 const InventoryList = () => {
