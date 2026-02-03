@@ -3,13 +3,12 @@ require('dotenv').config();
 const mysql = require('mysql2');
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "admin",
-    password: "",
-    database: "qr_scanner",
-  })
-
-  
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+});
 
 // Add error handling for connections
 db.connect((err) => {
@@ -20,4 +19,4 @@ db.connect((err) => {
   console.log('Connected to qr_scanner database');
 });
 
-module.exports = { db}; 
+module.exports = { db };

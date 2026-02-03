@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const purchaseOrderController = require('../controllers/purchaseOrderController');
-const { checkAdmin } = require('../middleware/authMiddleware');
+const authMiddleware = require('../middlewares/authMiddleware');
 
 // All routes require admin access
-router.use(checkAdmin);
+router.use(authMiddleware);
 
 // Get all purchase orders
 router.get('/purchase-orders', purchaseOrderController.getAllOrders);
@@ -13,10 +13,13 @@ router.get('/purchase-orders', purchaseOrderController.getAllOrders);
 router.post('/purchase-orders', purchaseOrderController.createOrder);
 
 // Mark order as received
-router.put('/purchase-orders/:id/receive', purchaseOrderController.receiveOrder);
+router.put(
+  '/purchase-orders/:id/receive',
+  purchaseOrderController.receiveOrder,
+);
 
 // Delete purchase order (optional)
 router.delete('/purchase-orders/:id', purchaseOrderController.deleteOrder);
-router.post('/send-order-email',purchaseOrderController.sentOrderEmail);
+router.post('/send-order-email', purchaseOrderController.sentOrderEmail);
 
-module.exports = router; 
+module.exports = router;
