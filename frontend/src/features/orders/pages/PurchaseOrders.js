@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../../api/axios";
 import "../styles/PurchaseOrders.css";
 import loadingIcon from "../../../assets/icons/loading.png";
 
@@ -38,7 +38,7 @@ const PurchaseOrders = () => {
   // Existing fetch functions remain the same
   const fetchInventoryItems = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/read", {
+      const response = await axios.get("/read", {
         headers: authHeaders,
       });
       // Sort items by quantity (lowest first)
@@ -54,7 +54,7 @@ const PurchaseOrders = () => {
 
   const fetchSupplier = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/suppliers", {
+      const response = await axios.get("/suppliers", {
         headers: authHeaders,
       });
       setSupplier(response.data);
@@ -69,7 +69,7 @@ const PurchaseOrders = () => {
   const fetchPurchaseOrders = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/purchase-orders",
+        "/purchase-orders",
         {
           headers: authHeaders,
         },
@@ -114,7 +114,7 @@ const PurchaseOrders = () => {
 
       // Create the order
       const orderResponse = await axios.post(
-        "http://localhost:5000/purchase-orders",
+        "/purchase-orders",
         newOrder,
         {
           headers: authHeaders,
@@ -135,7 +135,7 @@ const PurchaseOrders = () => {
       };
 
       // Send the email
-      await axios.post("http://localhost:5000/send-order-email", emailData, {
+      await axios.post("/send-order-email", emailData, {
         headers: authHeaders,
       });
 
@@ -160,7 +160,7 @@ const PurchaseOrders = () => {
   const handleOrderArrived = async (orderId) => {
     try {
       await axios.put(
-        `http://localhost:5000/purchase-orders/${orderId}/receive`,
+        `/purchase-orders/${orderId}/receive`,
         {},
         {
           headers: authHeaders,
@@ -304,3 +304,4 @@ const PurchaseOrders = () => {
 };
 
 export default PurchaseOrders;
+

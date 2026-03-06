@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/login.css";
-import Axios from "axios";
+import Axios from "../../../api/axios";
 
 const Register = ({ onLoginSuccess }) => {
   const [user, setUser] = useState("");
@@ -17,13 +17,13 @@ const Register = ({ onLoginSuccess }) => {
     }
 
     try {
-      await Axios.post("http://localhost:5000/register", {
+      await Axios.post("/register", {
         username: user,
         email: email,
         password: password,
       });
 
-      const loginResponse = await Axios.post("http://localhost:5000/login", {
+      const loginResponse = await Axios.post("/login", {
         email: email,
         password: password,
       });
@@ -118,3 +118,4 @@ const Register = ({ onLoginSuccess }) => {
 };
 
 export default Register;
+

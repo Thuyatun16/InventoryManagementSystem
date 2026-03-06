@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/InventoryList.css";
-import axios from "axios";
+import axios from "../../../api/axios";
 import loadingIcon from "../../../assets/icons/loading.png";
 import saveIcon from "../../../assets/icons/saveIcon.png";
 import AddItemForm from "./AddItemForm";
@@ -78,7 +78,7 @@ const InventoryList = () => {
   // Fetch items from the API
   const fetchData = () => {
     axios
-      .get("http://localhost:5000/read")
+      .get("/read")
       .then((response) => {
         setItems(response.data);
         setLoading(false);
@@ -93,7 +93,7 @@ const InventoryList = () => {
   // Fetch categories from the API
   const fetchCategories = () => {
     axios
-      .get("http://localhost:5000/categories")
+      .get("/categories")
       .then((response) => {
         setCategories(response.data);
         console.log(response.data);
@@ -123,8 +123,8 @@ const InventoryList = () => {
         return; // Stop execution if duplicate is found
       }
 
-      await axios.post("http://localhost:5000/create", newItem);
-      const updatedItems = await axios.get("http://localhost:5000/read");
+      await axios.post("/create", newItem);
+      const updatedItems = await axios.get("/read");
       setItems(updatedItems.data);
       alert("Item added successfully!");
     } catch (error) {
@@ -135,8 +135,8 @@ const InventoryList = () => {
 
   const handleDeleteItem = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/delete/${id}`);
-      const updatedItems = await axios.get("http://localhost:5000/read");
+      await axios.delete(`/delete/${id}`);
+      const updatedItems = await axios.get("/read");
       setItems(updatedItems.data);
       alert("Item deleted successfully!");
     } catch (error) {
@@ -167,7 +167,7 @@ const InventoryList = () => {
       setItems((prevItems) =>
         prevItems.map((item) => (item.id === id ? updatedItem : item)),
       );
-      await axios.put(`http://localhost:5000/update/${id}`, updatedItem);
+      await axios.put(`/update/${id}`, updatedItem);
       setFormData({
         name: "",
         quantity: "",
@@ -423,3 +423,4 @@ const InventoryList = () => {
 };
 
 export default InventoryList;
+

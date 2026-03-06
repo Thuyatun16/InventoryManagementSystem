@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../../staff/styles/AddStaff.css"; // Reuse the same CSS
-import Axios from "axios";
+import Axios from "../../../api/axios";
 import LoadingIcon from "../../../assets/icons/loading.png";
 import EditIcon from "../../../assets/icons/edit.png";
 import DeleteIcon from "../../../assets/icons/delete.png";
@@ -26,7 +26,7 @@ const CustomerManagement = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const response = await Axios.get("http://localhost:5000/customers", {
+      const response = await Axios.get("/customers", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -51,8 +51,8 @@ const CustomerManagement = () => {
       total_spent,
     };
     const endpoint = selectedCustomer
-      ? `http://localhost:5000/customers/${selectedCustomer.id}`
-      : "http://localhost:5000/customers";
+      ? `/customers/${selectedCustomer.id}`
+      : "/customers";
     const method = selectedCustomer ? "put" : "post";
 
     try {
@@ -103,7 +103,7 @@ const CustomerManagement = () => {
       return;
     setLoading(true);
     try {
-      await Axios.delete(`http://localhost:5000/customers/${id}`, {
+      await Axios.delete(`/customers/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -260,3 +260,4 @@ const CustomerManagement = () => {
 };
 
 export default CustomerManagement;
+

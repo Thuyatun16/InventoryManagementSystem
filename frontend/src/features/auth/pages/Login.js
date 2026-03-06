@@ -1,8 +1,8 @@
-/*************  ✨ Codeium Command 🌟  *************/
+/*************  Codeium Command  *************/
 import { useState } from "react";
 
 import "../styles/login.css";
-import Axios from "axios";
+import Axios from "../../../api/axios";
 import "animate.css";
 
 const Login = ({ onLoginSuccess }) => {
@@ -25,7 +25,7 @@ const Login = ({ onLoginSuccess }) => {
       return;
     }
 
-    Axios.post("http://localhost:5000/login", {
+    Axios.post("/login", {
       email: email,
       password: password,
     })
@@ -94,3 +94,4 @@ const Login = ({ onLoginSuccess }) => {
 };
 
 export default Login;
+

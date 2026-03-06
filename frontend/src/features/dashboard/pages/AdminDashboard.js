@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../../api/axios";
 import loadingIcon from "../../../assets/icons/loading.png";
 import {
   XAxis,
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
     const fetchAnalytics = async () => {
       try {
         const data = await axios.get(
-          `http://localhost:5000/analytics?timeRange=${timeRange}`,
+          `/analytics?timeRange=${timeRange}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -227,7 +227,7 @@ const AdminDashboard = () => {
           <div className="alerts-container">
             {analytics.inventoryAlerts.map((alert) => (
               <div key={alert.id} className={`alert-item ${alert.type}`}>
-                <span className="alert-icon">⚠️</span>
+                <span className="alert-icon">{"\u26A0\uFE0F"}</span>
                 <div className="alert-content">
                   <h4>{alert.product_name}</h4>
                   <p>{alert.message}</p>
@@ -242,3 +242,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import "../styles/CustomerPoints.css";
 
 const CustomerPoints = () => {
@@ -20,7 +20,7 @@ const CustomerPoints = () => {
 
   const fetchPointSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/point-settings", {
+      const response = await axios.get("/point-settings", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -37,7 +37,7 @@ const CustomerPoints = () => {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/point-transactions",
+        "/point-transactions",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -63,7 +63,7 @@ const CustomerPoints = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put("http://localhost:5000/point-settings", editedSettings, {
+      await axios.put("/point-settings", editedSettings, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -184,3 +184,4 @@ const CustomerPoints = () => {
 };
 
 export default CustomerPoints;
+

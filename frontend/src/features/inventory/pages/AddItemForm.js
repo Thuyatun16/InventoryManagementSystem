@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import CategoryForm from "./CategoryForm";
 import "../styles/AddItemForm.css";
 import HandleBarcodeScanner from "./HandleBarcodeScanner";
@@ -13,7 +13,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/categories", {
+        const response = await axios.get("/categories", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "user-id": localStorage.getItem("userId"),
@@ -44,7 +44,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
       // Ensure the new category has all required fields
       if (newCategory && newCategory.id && newCategory.name) {
         // Fetch the latest categories list
-        const response = await axios.get("http://localhost:5000/categories", {
+        const response = await axios.get("/categories", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "user-id": localStorage.getItem("userId"),
@@ -232,3 +232,4 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
 }
 
 export default AddItemForm;
+
