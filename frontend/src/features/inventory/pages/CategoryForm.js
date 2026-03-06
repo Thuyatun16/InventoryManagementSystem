@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import "../styles/CategoryForm.css";
 
 const CategoryForm = ({
@@ -23,7 +23,7 @@ const CategoryForm = ({
     if (editingId) {
       // Edit existing category
       const response = await axios.put(
-        `http://localhost:5000/categories/${editingId}`,
+        `/categories/${editingId}`,
         formData,
         {
           headers: {
@@ -38,7 +38,7 @@ const CategoryForm = ({
     } else {
       // Add new category
       const response = await axios.post(
-        "http://localhost:5000/categories",
+        "/categories",
         formData,
         {
           headers: {
@@ -79,7 +79,7 @@ const CategoryForm = ({
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await axios.delete(`http://localhost:5000/categories/${id}`, {
+        await axios.delete(`/categories/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
             "user-id": localStorage.getItem("userId"),
@@ -171,3 +171,4 @@ const CategoryForm = ({
 };
 
 export default CategoryForm;
+

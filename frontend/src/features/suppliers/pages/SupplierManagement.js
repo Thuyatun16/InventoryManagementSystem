@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import "../styles/SupplierManagement.css";
 import loadingIcon from "../../../assets/icons/loading.png";
 import editIcon from "../../../assets/icons/edit.png";
@@ -24,7 +24,7 @@ const SupplierManagement = () => {
 
   const fetchSupplier = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/suppliers", {
+      const response = await axios.get("/suppliers", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -65,7 +65,7 @@ const SupplierManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/suppliers", newSupplier, {
+      await axios.post("/suppliers", newSupplier, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -85,7 +85,7 @@ const SupplierManagement = () => {
     e.preventDefault();
     try {
       await axios.put(
-        `http://localhost:5000/suppliers/${editingSupplier.id}`,
+        `/suppliers/${editingSupplier.id}`,
         editingSupplier,
         {
           headers: {
@@ -107,7 +107,7 @@ const SupplierManagement = () => {
       return;
 
     try {
-      await axios.delete(`http://localhost:5000/suppliers/${id}`, {
+      await axios.delete(`/suppliers/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -223,7 +223,7 @@ const SupplierManagement = () => {
                     onClick={() => handleDelete(supplier.id)}
                     className="delete-btn"
                   >
-                    🗑️ Delete
+                    {"\uD83D\uDDD1\uFE0F"} Delete
                   </button> */}
                 </div>
               )}
@@ -247,3 +247,4 @@ const SupplierManagement = () => {
 };
 
 export default SupplierManagement;
+

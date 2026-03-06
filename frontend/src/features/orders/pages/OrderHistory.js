@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import "../styles/OrderHistory.css";
 import loadingIcon from "../../../assets/icons/loading.png";
 const OrderHistory = () => {
@@ -27,7 +27,7 @@ const OrderHistory = () => {
       }
       try {
         const endpoint = isAdmin ? "/orders/all" : `/orders/${userId}`;
-        const response = await axios.get(`http://localhost:5000${endpoint}`, {
+        const response = await axios.get(`${endpoint}`, {
           params: {
             isAdmin: isAdmin,
             ...filters,
@@ -187,3 +187,4 @@ const OrderHistory = () => {
 };
 
 export default OrderHistory;
+

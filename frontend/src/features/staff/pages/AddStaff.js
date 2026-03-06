@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/AddStaff.css";
-import Axios from "axios";
+import Axios from "../../../api/axios";
 import LoadingIcon from "../../../assets/icons/loading.png";
 import EditIcon from "../../../assets/icons/edit.png";
 import DeleteIcon from "../../../assets/icons/delete.png";
@@ -25,7 +25,7 @@ const AddStaff = () => {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const response = await Axios.get("http://localhost:5000/staff", {
+      const response = await Axios.get("/staff", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -60,8 +60,8 @@ const AddStaff = () => {
       ...(selectedStaff ? (password ? { password } : {}) : { password }),
     };
     const endpoint = selectedStaff
-      ? `http://localhost:5000/staff/${selectedStaff.id}`
-      : "http://localhost:5000/register";
+      ? `/staff/${selectedStaff.id}`
+      : "/register";
     const method = selectedStaff ? "put" : "post";
 
     try {
@@ -126,7 +126,7 @@ const AddStaff = () => {
       return;
     setLoading(true);
     try {
-      await Axios.delete(`http://localhost:5000/staff/${id}`, {
+      await Axios.delete(`/staff/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -340,3 +340,4 @@ const AddStaff = () => {
 };
 
 export default AddStaff;
+

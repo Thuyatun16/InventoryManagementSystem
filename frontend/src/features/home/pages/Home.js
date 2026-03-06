@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import HandleBarcodeScanner from "../../inventory/pages/HandleBarcodeScanner";
 import "../styles/Home.css";
 import "animate.css";
@@ -44,7 +44,7 @@ const Home = () => {
   }, [cartItems, calculateTotal]);
   const fetchPointSettings = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/point-settings", {
+      const response = await axios.get("/point-settings", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "user-id": localStorage.getItem("userId"),
@@ -60,7 +60,7 @@ const Home = () => {
 
   const handleSellData = async (barcode) => {
     try {
-      const response = await axios.get(`http://localhost:5000/sell/${barcode}`);
+      const response = await axios.get(`/sell/${barcode}`);
       const item = response.data;
 
       setCartItems((prev) => {
@@ -118,7 +118,7 @@ const Home = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `http://localhost:5000/customers/find-or-create`,
+        `/customers/find-or-create`,
         {
           phone_number: customerPhone,
         },
@@ -155,7 +155,7 @@ const Home = () => {
         userId: localStorage.getItem("userId"),
       };
       for (const item of cartItems) {
-        const res = await axios.post("http://localhost:5000/sell", {
+        const res = await axios.post("/sell", {
           id: item.id,
           soldQuantity: item.sellQuantity,
         });
@@ -163,7 +163,7 @@ const Home = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:5000/checkout",
+        "/checkout",
         orderData,
       );
       // console.log(cartItems, 'This is cart items');
@@ -195,7 +195,7 @@ const Home = () => {
 
       // Update analytics
       const updateResponse = await axios.post(
-        "http://localhost:5000/update-analytics",
+        "/update-analytics",
         {
           orderId: response.data.orderId,
         },
@@ -342,3 +342,4 @@ const Home = () => {
 };
 
 export default Home;
+
