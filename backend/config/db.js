@@ -3,9 +3,12 @@ require('dotenv').config();
 const mysql = require('mysql2');
 const fs = require('fs');
 
-const useSSL =
-  process.env.DB_SSL === 'true' ||
-  (process.env.DB_HOST || '').includes('tidbcloud.com');
+const dbHost = (process.env.DB_HOST || '').trim();
+const localHosts = new Set(['localhost', '127.0.0.1', 'mysql']);
+const isLocalHost = localHosts.has(dbHost.toLowerCase());
+const useSSL = process.env.DB_SSL
+  ? process.env.DB_SSL === 'true'
+  : !isLocalHost;
 
 let sslConfig;
 if (useSSL) {
@@ -20,13 +23,17 @@ if (useSSL) {
 }
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
+  host: dbHost,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: sslConfig,
 });
+
+console.log(
+  `[DB] host=${dbHost || 'N/A'} ssl=${useSSL ? 'enabled' : 'disabled'}`
+);
 
 // Add error handling for connections
 db.connect((err) => {
