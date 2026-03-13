@@ -36,7 +36,7 @@ const Home = () => {
       setUsePoints(false);
       setShowPointsMessage(false);
     }
-  }, [showPointsMessage]);
+  }, [showPointsMessage, setCustomer, setShowPointsMessage, setUsePoints]);
 
   // Add useEffect to auto-calculate total when cart items change
   useEffect(() => {

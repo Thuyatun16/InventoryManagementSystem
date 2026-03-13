@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../../../api/axios";
 import "../styles/PurchaseOrders.css";
@@ -12,11 +12,16 @@ const PurchaseOrders = () => {
   const [emailStatus, setEmailStatus] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const authHeaders = {
-    Authorization: `Bearer ${token}`,
-    "user-id": localStorage.getItem("userId"),
-    "is-admin": localStorage.getItem("isAdmin"),
-  };
+  const userId = localStorage.getItem("userId");
+  const isAdmin = localStorage.getItem("isAdmin");
+  const authHeaders = useMemo(
+    () => ({
+      Authorization: `Bearer ${token}`,
+      "user-id": userId,
+      "is-admin": isAdmin,
+    }),
+    [token, userId, isAdmin],
+  );
   const [newOrder, setNewOrder] = useState({
     item_id: "",
     quantity: "",
@@ -24,19 +29,8 @@ const PurchaseOrders = () => {
     expected_date: "",
   });
 
-  useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      navigate("/");
-      return;
-    }
-    fetchPurchaseOrders();
-    fetchInventoryItems();
-    fetchSupplier();
-  }, [navigate, token]);
-
   // Existing fetch functions remain the same
-  const fetchInventoryItems = async () => {
+  const fetchInventoryItems = useCallback(async () => {
     try {
       const response = await axios.get("/read", {
         headers: authHeaders,
@@ -50,9 +44,9 @@ const PurchaseOrders = () => {
         navigate("/");
       }
     }
-  };
+  }, [authHeaders, navigate]);
 
-  const fetchSupplier = async () => {
+  const fetchSupplier = useCallback(async () => {
     try {
       const response = await axios.get("/suppliers", {
         headers: authHeaders,
@@ -64,9 +58,9 @@ const PurchaseOrders = () => {
         navigate("/");
       }
     }
-  };
+  }, [authHeaders, navigate]);
 
-  const fetchPurchaseOrders = async () => {
+  const fetchPurchaseOrders = useCallback(async () => {
     try {
       const response = await axios.get(
         "/purchase-orders",
@@ -83,7 +77,18 @@ const PurchaseOrders = () => {
       }
       setLoading(false);
     }
-  };
+  }, [authHeaders, navigate]);
+
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      navigate("/");
+      return;
+    }
+    fetchPurchaseOrders();
+    fetchInventoryItems();
+    fetchSupplier();
+  }, [fetchInventoryItems, fetchPurchaseOrders, fetchSupplier, navigate, token]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
