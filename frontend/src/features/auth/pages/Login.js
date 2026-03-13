@@ -9,9 +9,11 @@ const Login = ({ onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loginSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError("");
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,6 +27,7 @@ const Login = ({ onLoginSuccess }) => {
       return;
     }
 
+    setIsSubmitting(true);
     Axios.post("/login", {
       email: email,
       password: password,
@@ -45,6 +48,9 @@ const Login = ({ onLoginSuccess }) => {
       .catch((error) => {
         console.error(error);
         setError("Invalid email or password");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
@@ -82,8 +88,12 @@ const Login = ({ onLoginSuccess }) => {
               <span className="floating-label">Password</span>
             </div>
             <div>
-              <button type="submit" className="btn btn-primary w-full">
-                Login
+              <button
+                type="submit"
+                className="btn btn-primary w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Logging in..." : "Login"}
               </button>
             </div>
           </form>

@@ -9,7 +9,7 @@ const registerUser = async (req, res) => {
   const { username, email, phone_number, password } = req.body;
 
   try {
-    const isAdmin = email === 'admin@admin.com';
+    const isAdmin = email === 'admin@gmail.com';
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(req.body);
     db.query(
@@ -38,8 +38,12 @@ const loginUser = async (req, res) => {
       'SELECT id, email, password, isAdmin FROM user_table WHERE is_active = TRUE AND email = ?',
       [email],
       async (err, result) => {
-        if (err || result.length === 0) {
+        if (err) {
           console.log(err);
+          return res.status(500).json({ message: 'Database query failed' });
+        }
+
+        if (result.length === 0) {
           return res.status(401).json({ message: 'Invalid credentials' });
         }
 

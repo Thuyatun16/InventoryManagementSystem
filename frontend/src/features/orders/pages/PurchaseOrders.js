@@ -10,6 +10,7 @@ const PurchaseOrders = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [supplier, setSupplier] = useState([]);
   const [emailStatus, setEmailStatus] = useState("");
+  const [receivingOrderId, setReceivingOrderId] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
@@ -163,6 +164,8 @@ const PurchaseOrders = () => {
   };
 
   const handleOrderArrived = async (orderId) => {
+    if (receivingOrderId) return;
+    setReceivingOrderId(orderId);
     try {
       await axios.put(
         `/purchase-orders/${orderId}/receive`,
@@ -175,6 +178,17 @@ const PurchaseOrders = () => {
       fetchInventoryItems(); // Refresh inventory after receiving order
     } catch (error) {
       console.error("Error marking order as received:", error);
+      const status = error.response?.status;
+      if (status === 404) {
+        setEmailStatus("Order not found. Please refresh and try again.");
+      } else if (status === 409) {
+        setEmailStatus("Order is already marked as received.");
+      } else {
+        setEmailStatus("Failed to mark order as received.");
+      }
+      fetchPurchaseOrders();
+    } finally {
+      setReceivingOrderId(null);
     }
   };
 
@@ -297,8 +311,11 @@ const PurchaseOrders = () => {
               <button
                 className="receive-btn"
                 onClick={() => handleOrderArrived(order.id)}
+                disabled={receivingOrderId === order.id}
               >
-                Mark as Received
+                {receivingOrderId === order.id
+                  ? "Marking..."
+                  : "Mark as Received"}
               </button>
             )}
           </div>

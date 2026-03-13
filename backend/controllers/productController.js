@@ -347,7 +347,7 @@ const getOrders = async (req, res) => {
                 u.username as customer_name
             FROM order_history oh
             LEFT JOIN order_items oi ON oh.order_id = oi.order_id
-            LEFT JOIN qr_scanner.items i ON oi.item_id = i.id
+            LEFT JOIN items i ON oi.item_id = i.id
             LEFT JOIN user_table u ON oh.user_id = u.id
             ${userFilter ? 'WHERE u.username LIKE ?' : ''}
             ORDER BY oh.order_date DESC`
@@ -361,7 +361,7 @@ const getOrders = async (req, res) => {
                 u.username as customer_name
             FROM order_history oh
             LEFT JOIN order_items oi ON oh.order_id = oi.order_id
-            LEFT JOIN qr_scanner.items i ON oi.item_id = i.id
+            LEFT JOIN items i ON oi.item_id = i.id
             LEFT JOIN user_table u ON oh.user_id = u.id
             WHERE oh.user_id = ?
             ORDER BY oh.order_date DESC`;

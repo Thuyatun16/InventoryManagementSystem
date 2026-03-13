@@ -68,7 +68,10 @@ const createOrder = async (req, res) => {
 
 const receiveOrder = async (req, res) => {
   try {
-    const orderId = req.params.id;
+    const orderId = Number(req.params.id);
+    if (!Number.isInteger(orderId) || orderId <= 0) {
+      return res.status(400).json({ message: 'Invalid order id' });
+    }
 
     // Start transaction
     db.beginTransaction(async (err) => {
@@ -80,19 +83,20 @@ const receiveOrder = async (req, res) => {
                     SELECT po.*, i.name as item_name 
                     FROM purchase_orders po
                     JOIN items i ON po.item_id = i.id
-                    WHERE po.id = ? AND po.status = "PENDING"
+                    WHERE po.id = ?
                 `;
 
         db.query(getOrderQuery, [orderId], async (err, orders) => {
           if (err) throw err;
 
           if (orders.length === 0) {
-            return res
-              .status(404)
-              .json({ message: 'Order not found or already received' });
+            return res.status(404).json({ message: 'Order not found' });
           }
 
           const order = orders[0];
+          if (order.status !== 'PENDING') {
+            return res.status(409).json({ message: 'Order already received' });
+          }
 
           // 2. Update inventory
           const updateInventoryQuery = `
