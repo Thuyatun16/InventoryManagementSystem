@@ -179,11 +179,14 @@ const sentOrderEmail = async (req, res) => {
   try {
     //console.log(to,subject,orderDetails,"test");
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER, // Your Gmail email
         pass: process.env.EMAIL_APP_PASSWORD, // Your Gmail app password
       },
+      connectionTimeout: 10000,
     });
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -280,7 +283,7 @@ const sentOrderEmail = async (req, res) => {
 </html>
             `,
     };
-    // Send email
+    await transporter.verify();
     await transporter.sendMail(mailOptions);
     res.status(200).json({ message: 'Email sent successfully' });
   } catch (err) {
