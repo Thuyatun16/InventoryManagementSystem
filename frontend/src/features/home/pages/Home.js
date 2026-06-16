@@ -4,6 +4,7 @@ import HandleBarcodeScanner from "../../inventory/pages/HandleBarcodeScanner";
 import "../styles/Home.css";
 import "animate.css";
 import { useCart } from "../../../context/CartContext";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const Home = () => {
   const [sellScan, setSellScan] = useState("");
@@ -26,6 +27,7 @@ const Home = () => {
     setShowPointsMessage,
     calculateTotal,
   } = useCart();
+  const { error: showError, success, info } = useNotifier();
 
   useEffect(() => {
     fetchPointSettings();
@@ -80,7 +82,7 @@ const Home = () => {
             newItems[existingItemIndex].subtotal =
               newQuantity * Number(item.sellPrice);
           } else {
-            alert("Cannot add more items than available in stock");
+            info("Cannot add more items than available in stock");
           }
           return newItems;
         } else {
@@ -99,7 +101,7 @@ const Home = () => {
       setSellScan("");
     } catch (error) {
       console.error("Error fetching item:", error);
-      alert("Item not found");
+      showError("Item not found");
     }
   };
 
@@ -134,7 +136,9 @@ const Home = () => {
       setCustomerPhone("");
     } catch (error) {
       console.error("Error finding/creating customer:", error);
-      alert(error.message);
+      showError(
+        error.response?.data?.message || "Unable to find the customer",
+      );
     }
   };
 
@@ -142,6 +146,7 @@ const Home = () => {
     try {
       let discount = 0;
       let final_amount = total;
+      let earnedPoints = 0;
       const orderData = {
         items: cartItems.map((item) => ({
           id: item.id,
@@ -152,7 +157,6 @@ const Home = () => {
         total_amount: calculateTotal(),
         customer_id: customer ? customer.id : null,
         use_points: customer && usePoints,
-        userId: localStorage.getItem("userId"),
       };
       for (const item of cartItems) {
         const res = await axios.post("/sell", {
@@ -174,7 +178,8 @@ const Home = () => {
       }
 
       if (customer && response.data.points_earned) {
-        setPointsEarned(response.data.points_earned);
+        earnedPoints = response.data.points_earned;
+        setPointsEarned(earnedPoints);
         setShowPointsMessage(true);
       }
 
@@ -183,12 +188,12 @@ const Home = () => {
       setTotal(0);
 
       // Display appropriate success message
-      if (customer && pointsEarned > 0) {
-        alert(
-          `Sale completed successfully! Discount applied: $${discount}. ${customer.name} earned ${pointsEarned} points from this purchase!`,
+      if (customer && earnedPoints > 0) {
+        success(
+          `Sale completed successfully! Discount applied: $${discount}. ${customer.name} earned ${earnedPoints} points from this purchase!`,
         );
       } else {
-        alert(
+        success(
           `Sale completed successfully! Discount applied: $${discount}. The Total Amount is $${final_amount}`,
         );
       }
@@ -203,7 +208,7 @@ const Home = () => {
       console.log(updateResponse.data, "This is update response data");
     } catch (error) {
       console.error("Error during checkout:", error);
-      alert(
+      showError(
         error.response?.data?.message || "An error occurred during checkout",
       );
     }

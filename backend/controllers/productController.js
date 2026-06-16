@@ -212,7 +212,8 @@ const processSale = async (req, res) => {
 
 // Process Checkout
 const processCheckout = async (req, res) => {
-  const { items, total_amount, customer_id, use_points, userId } = req.body;
+  const { items, total_amount, customer_id, use_points } = req.body;
+  const userId = req.user.userId;
 
   try {
     // Start transaction
@@ -327,8 +328,9 @@ const processCheckout = async (req, res) => {
 };
 // Get Orders
 const getOrders = async (req, res) => {
-  const userId = req.params.userId;
-  const isAdmin = req.query.isAdmin === 'true';
+  const requestedUserId = req.params.userId;
+  const userId = req.user.userId;
+  const isAdmin = req.user.isAdmin;
   const userFilter = req.query.userFilter || '';
 
   // console.log("checking isAdmin", isAdmin);
@@ -365,6 +367,10 @@ const getOrders = async (req, res) => {
             LEFT JOIN user_table u ON oh.user_id = u.id
             WHERE oh.user_id = ?
             ORDER BY oh.order_date DESC`;
+
+    if (!isAdmin && String(requestedUserId) !== String(userId)) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
 
     const params = isAdmin ? (userFilter ? [`%${userFilter}%`] : []) : [userId];
 

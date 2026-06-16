@@ -4,6 +4,7 @@ import axios from "../../../api/axios";
 import loadingIcon from "../../../assets/icons/loading.png";
 import saveIcon from "../../../assets/icons/saveIcon.png";
 import AddItemForm from "./AddItemForm";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const InventoryList = () => {
   const [items, setItems] = useState([]);
@@ -22,6 +23,7 @@ const InventoryList = () => {
   });
   const [error, setError] = useState("");
   const [isAdmin] = useState(localStorage.getItem("isAdmin") === "true");
+  const { success, error: showError, warning } = useNotifier();
 
   const calculateStats = () => {
     const validPrices = items
@@ -119,17 +121,18 @@ const InventoryList = () => {
           (item) => item.name.toLowerCase() === newItem.name.toLowerCase(),
         );
       if (barcodeExists) {
-        alert("This item already exists with the same name or barcode!");
+        warning("This item already exists with the same name or barcode");
         return; // Stop execution if duplicate is found
       }
 
       await axios.post("/create", newItem);
       const updatedItems = await axios.get("/read");
       setItems(updatedItems.data);
-      alert("Item added successfully!");
+      success("Item added successfully");
     } catch (error) {
       console.error("Error adding item:", error);
       setError("Error adding item: " + error.message);
+      showError("Error adding item");
     }
   };
 
@@ -138,10 +141,11 @@ const InventoryList = () => {
       await axios.delete(`/delete/${id}`);
       const updatedItems = await axios.get("/read");
       setItems(updatedItems.data);
-      alert("Item deleted successfully!");
+      success("Item deleted successfully");
     } catch (error) {
       console.error("Error deleting item:", error);
       setError("Error deleting item: " + error.message);
+      showError("Error deleting item");
     }
   };
 

@@ -7,13 +7,13 @@ const {
   deleteCategory,
 } = require('../controllers/categoryController');
 const authMiddleware = require('../middlewares/authMiddleware');
-// Public route
+const requireAdmin = require('../middlewares/adminMiddleware');
+
 router.use(authMiddleware);
 router.get('/categories', getAllCategories);
 
-// Admin routes - require authentication
-router.post('/categories', createCategory);
-router.put('/categories/:id', updateCategory);
-router.delete('/categories/:id', deleteCategory);
+router.post('/categories', requireAdmin, createCategory);
+router.put('/categories/:id', requireAdmin, updateCategory);
+router.delete('/categories/:id', requireAdmin, deleteCategory);
 
 module.exports = router;

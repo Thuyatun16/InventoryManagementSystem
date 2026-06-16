@@ -6,6 +6,7 @@ import EditIcon from "../../../assets/icons/edit.png";
 import DeleteIcon from "../../../assets/icons/delete.png";
 import AddIcon from "../../../assets/icons/add-staff.png";
 import "../styles/CustomerManagement.css";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const CustomerManagement = () => {
   const [name, setName] = useState("");
@@ -18,6 +19,7 @@ const CustomerManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const isAdmin = localStorage.getItem("isAdmin") === "true";
+  const { success, error: showError, confirm } = useNotifier();
 
   useEffect(() => {
     fetchCustomers();
@@ -62,7 +64,7 @@ const CustomerManagement = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      alert(
+      success(
         selectedCustomer
           ? "Customer Updated Successfully"
           : "Customer Added Successfully",
@@ -99,7 +101,12 @@ const CustomerManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this customer?"))
+    const confirmed = await confirm({
+      title: "Delete Customer",
+      message: "Are you sure you want to delete this customer?",
+      confirmText: "Delete",
+    });
+    if (!confirmed)
       return;
     setLoading(true);
     try {
@@ -109,9 +116,10 @@ const CustomerManagement = () => {
         },
       });
       fetchCustomers();
-      alert("Customer deleted successfully");
+      success("Customer deleted successfully");
     } catch (error) {
       setError("Error deleting customer");
+      showError("Error deleting customer");
     } finally {
       setLoading(false);
     }

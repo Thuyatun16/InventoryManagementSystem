@@ -1,28 +1,35 @@
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
-  // Extract the token from the Authorization header
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Authentication required' });
   }
 
-  const token = authHeader.split(' ')[1]; // Extract the token
+  const token = authHeader.split(' ')[1];
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    return res.status(500).json({ message: 'JWT secret is not configured' });
+  }
 
   try {
-    // Verify the token using the secret key
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId || decoded.id;
 
-    // Attach the user object to the request
+    if (!userId) {
+      return res.status(401).json({ message: 'Invalid token payload' });
+    }
+
     req.user = {
-      userId: decoded.userId,
-      isAdmin: decoded.isAdmin,
+      userId,
+      isAdmin: Boolean(decoded.isAdmin),
+      email: decoded.email || null,
     };
 
-    next(); // Proceed to the next middleware/route handler
+    next();
   } catch (error) {
-    // Handle invalid or expired tokens
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };

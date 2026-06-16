@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const supplierController = require('../controllers/supplierController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const requireAdmin = require('../middlewares/adminMiddleware');
 
-router.use(authMiddleware);
+router.use(authMiddleware, requireAdmin);
 router.get('/suppliers', supplierController.getAllSuppliers);
 // Supplier endpoints
 

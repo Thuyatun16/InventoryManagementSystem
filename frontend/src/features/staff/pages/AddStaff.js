@@ -5,6 +5,7 @@ import LoadingIcon from "../../../assets/icons/loading.png";
 import EditIcon from "../../../assets/icons/edit.png";
 import DeleteIcon from "../../../assets/icons/delete.png";
 import AddIcon from "../../../assets/icons/add-staff.png"; // Assume you have an add icon
+import { useNotifier } from "../../../context/NotifierContext";
 
 const AddStaff = () => {
   const [user, setUser] = useState("");
@@ -17,6 +18,7 @@ const AddStaff = () => {
   const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState(null);
+  const { success, error: showError, confirm } = useNotifier();
 
   useEffect(() => {
     fetchStaff();
@@ -73,7 +75,7 @@ const AddStaff = () => {
         },
       });
       console.log(response.data);
-      alert(
+      success(
         selectedStaff
           ? "Staff Updated Successfully"
           : "Staff Register Successful",
@@ -122,7 +124,12 @@ const AddStaff = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this staff member?"))
+    const confirmed = await confirm({
+      title: "Delete Staff Member",
+      message: "Are you sure you want to delete this staff member?",
+      confirmText: "Delete",
+    });
+    if (!confirmed)
       return;
     setLoading(true);
     try {
@@ -134,10 +141,11 @@ const AddStaff = () => {
         },
       });
       fetchStaff();
-      alert("Staff deleted successfully");
+      success("Staff deleted successfully");
     } catch (error) {
       console.error("Error deleting staff:", error);
       setError("Error deleting staff member");
+      showError("Error deleting staff member");
     } finally {
       setLoading(false);
     }

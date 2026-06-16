@@ -3,11 +3,13 @@ import axios from "../../../api/axios";
 import CategoryForm from "./CategoryForm";
 import "../styles/AddItemForm.css";
 import HandleBarcodeScanner from "./HandleBarcodeScanner";
+import { useNotifier } from "../../../context/NotifierContext";
 
 function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
   const [isItemFormOpen, setIsItemFormOpen] = useState(false);
   const [isCategoryFormOpen, setIsCategoryFormOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const { warning } = useNotifier();
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -108,7 +110,7 @@ function AddItemForm({ formData, setFormData, onAddItem, onCategoriesUpdate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.quantity || !formData.barcode) {
-      alert("Please fill all the fields");
+      warning("Please fill all the fields");
       return;
     }
     onAddItem(formData);

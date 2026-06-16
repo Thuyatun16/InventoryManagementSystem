@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const customerController = require('../controllers/customerController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const requireAdmin = require('../middlewares/adminMiddleware');
 
 router.use(authMiddleware);
 router.get('/customers', customerController.getAllCustomers);
@@ -17,37 +18,20 @@ router.post('/customers/:id/points/redeem', customerController.redeemPoints);
 router.get('/point-settings', customerController.getPointSettings);
 router.put(
   '/point-settings',
-  authMiddleware,
+  requireAdmin,
   customerController.updatePointSettings,
 );
 
 // Add these routes
 
-router.post('/customers', authMiddleware, customerController.createCustomer);
-router.put('/customers/:id', authMiddleware, customerController.updateCustomer);
-router.delete(
-  '/customers/:id',
-  authMiddleware,
-  customerController.deleteCustomer,
-);
+router.post('/customers', customerController.createCustomer);
+router.put('/customers/:id', customerController.updateCustomer);
+router.delete('/customers/:id', customerController.deleteCustomer);
 
 // Add these routes to your existing customerRoutes.js
 // Allow both admin and staff to access point transactions
 router.get(
   '/point-transactions',
-  (req, res, next) => {
-    // Check if user is admin or staff
-    const isAdmin = req.headers['is-admin'] === 'true';
-    const userId = req.headers['user-id'];
-
-    // Allow access if user has valid credentials
-    if (userId && (isAdmin || true)) {
-      // Allow all authenticated users with a userId
-      next();
-    } else {
-      return res.status(403).json({ message: 'Access denied' });
-    }
-  },
   customerController.getPointTransactions,
 );
 

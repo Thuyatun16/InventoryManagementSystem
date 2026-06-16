@@ -200,7 +200,7 @@ const getPointSettings = async (req, res) => {
 const updatePointSettings = async (req, res) => {
   const { points_per_amount, discount_per_point, minimum_points_for_discount } =
     req.body;
-  const userId = req.headers['user-id'];
+  const userId = req.user.userId;
 
   try {
     // Validate inputs

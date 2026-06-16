@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "../../../api/axios";
 import "../styles/CategoryForm.css";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const CategoryForm = ({
   categories,
@@ -15,54 +16,65 @@ const CategoryForm = ({
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { success: showSuccess, error: showError, confirm } = useNotifier();
 
   // Handle form submission for adding or editing a category
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (editingId) {
-      // Edit existing category
-      const response = await axios.put(
-        `/categories/${editingId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
+    try {
+      if (editingId) {
+        const response = await axios.put(
+          `/categories/${editingId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "user-id": localStorage.getItem("userId"),
+              "is-admin": localStorage.getItem("isAdmin"),
+            },
           },
-        },
-      );
-      onCategoryEdited(response.data);
-      setSuccess("Category updated successfully");
-    } else {
-      // Add new category
-      const response = await axios.post(
-        "/categories",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
+        );
+        onCategoryEdited(response.data);
+        setSuccess("Category updated successfully");
+        showSuccess("Category updated successfully");
+      } else {
+        const response = await axios.post(
+          "/categories",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "user-id": localStorage.getItem("userId"),
+              "is-admin": localStorage.getItem("isAdmin"),
+            },
           },
-        },
-      );
-      if (response.data && response.data.categoryId) {
-        // Create a category object with the received data
-        const newCategory = {
-          id: response.data.categoryId,
-          name: formData.name,
-          description: formData.description,
-        };
+        );
+        if (response.data && response.data.categoryId) {
+          const newCategory = {
+            id: response.data.categoryId,
+            name: formData.name,
+            description: formData.description,
+            created_at: new Date().toISOString(),
+          };
 
-        onCategoryAdded(newCategory);
-        setSuccess("Category created successfully");
+          onCategoryAdded(newCategory);
+          setSuccess("Category created successfully");
+          showSuccess("Category created successfully");
+        }
       }
-      // Reset form and state
+
+      setError("");
       setFormData({ name: "", description: "" });
       setEditingId(null);
       setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        "Failed to save category";
+      setError(message);
+      showError(message);
+      setTimeout(() => setError(""), 3000);
     }
   };
 
@@ -77,22 +89,31 @@ const CategoryForm = ({
 
   // Handle category deletion
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      try {
-        await axios.delete(`/categories/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "user-id": localStorage.getItem("userId"),
-            "is-admin": localStorage.getItem("isAdmin"),
-          },
-        });
-        onCategoryDeleted(id);
-        setSuccess("Category deleted successfully");
-        setTimeout(() => setSuccess(""), 3000);
-      } catch (err) {
-        setError("Failed to delete category");
-        setTimeout(() => setError(""), 3000);
-      }
+    const confirmed = await confirm({
+      title: "Delete Category",
+      message: "Are you sure you want to delete this category?",
+      confirmText: "Delete",
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/categories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "user-id": localStorage.getItem("userId"),
+          "is-admin": localStorage.getItem("isAdmin"),
+        },
+      });
+      onCategoryDeleted(id);
+      setSuccess("Category deleted successfully");
+      showSuccess("Category deleted successfully");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError("Failed to delete category");
+      showError("Failed to delete category");
+      setTimeout(() => setError(""), 3000);
     }
   };
 

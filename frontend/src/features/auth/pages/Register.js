@@ -2,17 +2,20 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/login.css";
 import Axios from "../../../api/axios";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const Register = ({ onLoginSuccess }) => {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { error: showError, success } = useNotifier();
 
   const register = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("Password and confirm password does not match");
+      showError("Password and confirm password do not match");
       return;
     }
 
@@ -20,6 +23,7 @@ const Register = ({ onLoginSuccess }) => {
       await Axios.post("/register", {
         username: user,
         email: email,
+        phone_number: phoneNumber,
         password: password,
       });
 
@@ -35,21 +39,30 @@ const Register = ({ onLoginSuccess }) => {
           loginResponse.data.isAdmin.toString(),
         );
         localStorage.setItem("token", loginResponse.data.token);
+        success("Registration completed successfully");
         onLoginSuccess();
         return;
       }
 
-      alert(loginResponse.data?.message || "Login failed after registration");
+      showError(loginResponse.data?.message || "Login failed after registration");
     } catch (error) {
       if (error.response?.status === 409) {
-        alert(error.response.data.error);
+        showError(
+          error.response.data.message ||
+            error.response.data.error ||
+            "User already exists",
+        );
         return;
       }
       if (error.response?.status === 400) {
-        alert(error.response.data.error);
+        showError(
+          error.response.data.message ||
+            error.response.data.error ||
+            "Invalid registration data",
+        );
         return;
       }
-      alert("Registration failed");
+      showError("Registration failed");
     }
   };
 
@@ -78,6 +91,17 @@ const Register = ({ onLoginSuccess }) => {
                 required
               />
               <span className="floating-label">Email</span>
+            </div>
+            <div className="input-group">
+              <input
+                type="tel"
+                className="form-input"
+                placeholder="Phone Number"
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                pattern="[0-9]{6,15}"
+                required
+              />
+              <span className="floating-label">Phone Number</span>
             </div>
             <div className="input-group">
               <input

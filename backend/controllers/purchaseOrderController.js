@@ -36,7 +36,7 @@ const getAllOrders = async (req, res) => {
 const createOrder = async (req, res) => {
   try {
     const { item_id, quantity, supplier_id, expected_date } = req.body;
-    const userId = req.headers['user-id'];
+    const userId = req.user.userId;
 
     const query = `
             INSERT INTO purchase_orders 

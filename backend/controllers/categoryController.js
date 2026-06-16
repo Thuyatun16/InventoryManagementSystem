@@ -17,7 +17,8 @@ const getAllCategories = async (req, res) => {
 };
 
 const createCategory = async (req, res) => {
-  const { name, description } = req.body;
+  const name = String(req.body?.name || '').trim();
+  const description = req.body?.description || null;
 
   if (!name) {
     return res.status(400).json({ error: 'Category name is required' });
@@ -27,7 +28,16 @@ const createCategory = async (req, res) => {
     const query = 'INSERT INTO categories (name, description) VALUES (?, ?)';
     db.query(query, [name, description], (err, result) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        console.error('Error creating category:', err);
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({
+            message: 'A category with this name already exists',
+          });
+        }
+        return res.status(500).json({
+          message: 'Failed to create category',
+          error: err.message,
+        });
       }
       res.status(201).json({
         message: 'Category created successfully',
@@ -41,7 +51,8 @@ const createCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
+  const name = String(req.body?.name || '').trim();
+  const description = req.body?.description || null;
 
   if (!name) {
     return res.status(400).json({ error: 'Category name is required' });
@@ -52,7 +63,16 @@ const updateCategory = async (req, res) => {
       'UPDATE categories SET name = ?, description = ? WHERE id = ?';
     db.query(query, [name, description, id], (err, result) => {
       if (err) {
-        return res.status(500).json({ error: 'Database error' });
+        console.error('Error updating category:', err);
+        if (err.code === 'ER_DUP_ENTRY') {
+          return res.status(409).json({
+            message: 'A category with this name already exists',
+          });
+        }
+        return res.status(500).json({
+          message: 'Failed to update category',
+          error: err.message,
+        });
       }
       if (result.affectedRows === 0) {
         return res.status(404).json({ error: 'Category not found' });

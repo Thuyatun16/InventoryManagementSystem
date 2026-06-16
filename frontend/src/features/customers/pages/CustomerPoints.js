@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../api/axios";
 import "../styles/CustomerPoints.css";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const CustomerPoints = () => {
   const [settings, setSettings] = useState({
@@ -12,6 +13,7 @@ const CustomerPoints = () => {
   const [isAdmin] = useState(localStorage.getItem("isAdmin") === "true");
   const [isEditing, setIsEditing] = useState(false);
   const [editedSettings, setEditedSettings] = useState({});
+  const { success, error: showError } = useNotifier();
 
   useEffect(() => {
     fetchPointSettings();
@@ -72,10 +74,10 @@ const CustomerPoints = () => {
       });
       setSettings(editedSettings);
       setIsEditing(false);
-      alert("Settings updated successfully!");
+      success("Settings updated successfully");
     } catch (error) {
       console.error("Error updating settings:", error);
-      alert("Error updating settings");
+      showError("Error updating settings");
     }
   };
 

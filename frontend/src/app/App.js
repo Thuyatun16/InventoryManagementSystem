@@ -15,6 +15,7 @@ import CustomerManagement from "../features/customers/pages/CustomerManagement";
 import SupplierManagement from "../features/suppliers/pages/SupplierManagement";
 import AddStaff from "../features/staff/pages/AddStaff";
 import { CartProvider } from "../context/CartContext";
+import { NotifierProvider } from "../context/NotifierContext";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,50 +40,52 @@ function App() {
 
   return (
     <div className="app">
-      <CartProvider>
-        <BrowserRouter>
-          <Routes>
-            {!isLoggedIn ? (
-              <>
-                <Route
-                  path="/"
-                  element={<Login onLoginSuccess={handleLoginSuccess} />}
-                />
-                <Route
-                  path="/register"
-                  element={<Register onLoginSuccess={handleLoginSuccess} />}
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </>
-            ) : (
-              <Route path="/" element={<Layout onLogout={handleLogout} />}>
-                <Route index element={<Home />} />
-                <Route
-                  path="dashboard"
-                  element={isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
-                />
-                <Route path="inventoryList" element={<InventoryList />} />
-                <Route path="orderHistory" element={<OrderHistory />} />
-                <Route
-                  path="purchase-orders"
-                  element={isAdmin ? <PurchaseOrders /> : <Navigate to="/" />}
-                />
-                <Route path="customer-points" element={<CustomerPoints />} />
-                <Route
-                  path="customer-management"
-                  element={<CustomerManagement />}
-                />
-                <Route
-                  path="supplier-management"
-                  element={<SupplierManagement />}
-                />
-                <Route path="add-staff" element={<AddStaff />} />
-                <Route path="*" element={<Nopage />} />
-              </Route>
-            )}
-          </Routes>
-        </BrowserRouter>
-      </CartProvider>
+      <NotifierProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <Routes>
+              {!isLoggedIn ? (
+                <>
+                  <Route
+                    path="/"
+                    element={<Login onLoginSuccess={handleLoginSuccess} />}
+                  />
+                  <Route
+                    path="/register"
+                    element={<Register onLoginSuccess={handleLoginSuccess} />}
+                  />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </>
+              ) : (
+                <Route path="/" element={<Layout onLogout={handleLogout} />}>
+                  <Route index element={<Home />} />
+                  <Route
+                    path="dashboard"
+                    element={isAdmin ? <AdminDashboard /> : <Navigate to="/" />}
+                  />
+                  <Route path="inventoryList" element={<InventoryList />} />
+                  <Route path="orderHistory" element={<OrderHistory />} />
+                  <Route
+                    path="purchase-orders"
+                    element={isAdmin ? <PurchaseOrders /> : <Navigate to="/" />}
+                  />
+                  <Route path="customer-points" element={<CustomerPoints />} />
+                  <Route
+                    path="customer-management"
+                    element={<CustomerManagement />}
+                  />
+                  <Route
+                    path="supplier-management"
+                    element={<SupplierManagement />}
+                  />
+                  <Route path="add-staff" element={<AddStaff />} />
+                  <Route path="*" element={<Nopage />} />
+                </Route>
+              )}
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
+      </NotifierProvider>
     </div>
   );
 }

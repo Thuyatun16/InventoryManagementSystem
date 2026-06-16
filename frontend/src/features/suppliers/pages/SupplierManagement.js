@@ -4,6 +4,7 @@ import "../styles/SupplierManagement.css";
 import loadingIcon from "../../../assets/icons/loading.png";
 import editIcon from "../../../assets/icons/edit.png";
 import deleteIcon from "../../../assets/icons/delete.png";
+import { useNotifier } from "../../../context/NotifierContext";
 
 const SupplierManagement = () => {
   const [suppliers, setSupplier] = useState([]);
@@ -16,6 +17,7 @@ const SupplierManagement = () => {
   });
   const [editingSupplier, setEditingSupplier] = useState(null);
   const [isAdmin] = useState(localStorage.getItem("isAdmin") === "true");
+  const { success, error: showError, confirm } = useNotifier();
 
   useEffect(() => {
     fetchSupplier();
@@ -75,9 +77,10 @@ const SupplierManagement = () => {
       console.log(newSupplier, "Testingggggggggg Supplier");
       setNewSupplier({ name: "", phone_number: "", email: "", address: "" });
       fetchSupplier();
+      success("Supplier created successfully");
     } catch (error) {
       console.error("Error creating Supplier:", error);
-      alert("Error creating Supplier. Phone number might already exist.");
+      showError("Error creating supplier. Phone number might already exist.");
     }
   };
 
@@ -97,13 +100,20 @@ const SupplierManagement = () => {
       );
       setEditingSupplier(null);
       fetchSupplier();
+      success("Supplier updated successfully");
     } catch (error) {
       console.error("Error updating Supplier:", error);
+      showError("Error updating supplier");
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this Supplier?"))
+    const confirmed = await confirm({
+      title: "Delete Supplier",
+      message: "Are you sure you want to delete this supplier?",
+      confirmText: "Delete",
+    });
+    if (!confirmed)
       return;
 
     try {
@@ -115,8 +125,10 @@ const SupplierManagement = () => {
         },
       });
       fetchSupplier();
+      success("Supplier deleted successfully");
     } catch (error) {
       console.error("Error deleting Supplier:", error);
+      showError("Error deleting supplier");
     }
   };
   if (loading)
