@@ -22,25 +22,24 @@ if (useSSL) {
   }
 }
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: dbHost,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: sslConfig,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
 });
 
 console.log(
   `[DB] host=${dbHost || 'N/A'} ssl=${useSSL ? 'enabled' : 'disabled'}`
 );
 
-// Add error handling for connections
-db.connect((err) => {
-  if (err) {
-    console.error('Error connecting to qr_scanner:', err);
-    return;
-  }
+db.on('connection', () => {
   console.log('Connected to qr_scanner database');
 });
 
